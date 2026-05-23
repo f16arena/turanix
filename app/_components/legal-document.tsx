@@ -23,19 +23,19 @@ export function LegalDocument({
   return (
     <main className="min-h-screen bg-[color:var(--bg)] py-8">
       <div className="container-wide">
-        <header className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-[color:var(--rule)] bg-[color:var(--paper)] px-4 py-3">
-          <Link href="/" className="flex items-center gap-3">
+        <header className="mb-6 flex items-center justify-between gap-3 rounded-lg border border-[color:var(--rule)] bg-[color:var(--paper)] px-4 py-3">
+          <Link href="/" className="flex min-w-0 items-center gap-3">
             <Image
               src="/brand/turanix-logo-full.png"
               alt="Turanix"
               width={300}
               height={64}
-              className="h-8 w-auto max-w-[180px]"
+              className="h-8 w-auto max-w-[120px] min-[380px]:max-w-[160px] sm:max-w-[180px]"
             />
           </Link>
           <Link
             href="/#contact"
-            className="font-mono text-[10px] uppercase text-[color:var(--ink-mute)] hover:text-[color:var(--ink)]"
+            className="min-w-0 truncate font-mono text-[10px] uppercase text-[color:var(--ink-mute)] hover:text-[color:var(--ink)]"
           >
             hello@turanix.kz
           </Link>

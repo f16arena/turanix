@@ -62,7 +62,7 @@ export function Hero() {
 
             <h1
               aria-label={`${t.hero.l1} ${t.hero.l2} ${t.hero.l3em}`}
-              className="display max-w-[900px] text-[46px] sm:text-[60px] md:text-[68px] xl:text-[76px]"
+              className="display max-w-[900px] text-[38px] min-[380px]:text-[44px] sm:text-[60px] md:text-[68px] xl:text-[76px]"
             >
               <Reveal delay={0.04}>{t.hero.l1}</Reveal>
               <Reveal delay={0.14}>{t.hero.l2}</Reveal>
@@ -142,6 +142,7 @@ function SystemMap({
   lang: "ru" | "en";
 }) {
   const [web, mobile, crm, telegram, ai] = items;
+  const mobileNodes = [web, mobile, crm, telegram, ai];
   const copy =
     lang === "ru"
       ? {
@@ -172,7 +173,45 @@ function SystemMap({
         </span>
       </div>
 
-      <div className="relative min-h-[440px]">
+      <div className="grid gap-3 md:hidden">
+        {mobileNodes.map((item) => {
+          const isCore = item === crm;
+
+          return (
+            <div
+              key={item.label}
+              className={`rounded-lg border p-4 ${
+                isCore
+                  ? "border-[color:var(--signal)] bg-[color:var(--signal)] text-[color:var(--dark)]"
+                  : "border-white/12 bg-white/[0.07] text-white"
+              }`}
+            >
+              <div
+                className={`mb-5 h-1.5 w-1.5 rounded-full ${
+                  isCore ? "bg-[color:var(--dark)]" : "bg-[color:var(--signal)]"
+                }`}
+              />
+              <div className="text-[18px] font-semibold">
+                {isCore ? copy.core : item.label}
+              </div>
+              <div
+                className={`mt-2 font-mono text-[11px] uppercase ${
+                  isCore ? "text-black/58" : "text-white/46"
+                }`}
+              >
+                {isCore ? item.label : item.detail}
+              </div>
+              {isCore ? (
+                <div className="mt-2 text-[13px] leading-[1.45] text-black/60">
+                  {item.detail}
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="relative hidden min-h-[440px] md:block">
         <svg
           className="absolute inset-0 h-full w-full"
           viewBox="0 0 620 440"

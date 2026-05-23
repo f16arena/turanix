@@ -16,7 +16,10 @@ type Project = {
   tagsRu: string[];
   tagsEn: string[];
   year: string;
-  href: string;
+  href?: string;
+  preview?: "screenshot" | "generated";
+  statusRu?: string;
+  statusEn?: string;
 };
 
 const projects: Project[] = [
@@ -60,7 +63,9 @@ const projects: Project[] = [
     tagsRu: ["Бренд", "Контент", "Безопасность"],
     tagsEn: ["Brand", "Content", "Security"],
     year: "2025",
-    href: "https://cyber-site-five.vercel.app",
+    preview: "generated",
+    statusRu: "Архив",
+    statusEn: "Archive",
   },
   {
     index: "04",
@@ -75,6 +80,7 @@ const projects: Project[] = [
     tagsEn: ["Downloads", "Windows", "UX"],
     year: "2026",
     href: "https://pcapp-five.vercel.app",
+    preview: "generated",
   },
   {
     index: "05",
@@ -164,21 +170,23 @@ function ProjectCard({
   live: string;
   lang: "ru" | "en";
 }) {
-  const imageUrl = `https://image.thum.io/get/width/1200/crop/820/noanimate/${project.href}`;
+  const isLinked = Boolean(project.href);
+  const status =
+    (lang === "ru" ? project.statusRu : project.statusEn) ?? live;
+  const action = isLinked
+    ? visit
+    : lang === "ru"
+      ? "Кейс без ссылки"
+      : "Case only";
+  const imageUrl = project.href
+    ? `https://image.thum.io/get/width/1200/crop/820/noanimate/${project.href}`
+    : null;
+  const cardClass = `surface group flex h-full min-h-[500px] flex-col overflow-hidden ${
+    isLinked ? "" : "cursor-default"
+  }`;
 
-  return (
-    <motion.li
-      initial={{ opacity: 0, y: 16 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
-      className="h-full"
-    >
-      <a
-        href={project.href}
-        target="_blank"
-        rel="noreferrer"
-        className="surface group flex h-full min-h-[500px] flex-col overflow-hidden"
-      >
+  const content = (
+    <>
         <div className="border-b border-[color:var(--rule)] p-4">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -189,9 +197,19 @@ function ProjectCard({
                 {project.name}
               </h3>
             </div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[color:var(--rule)] px-2 py-1 font-mono text-[10px] uppercase text-[color:var(--accent)]">
-              <span className="live-dot" />
-              {live}
+            <span
+              className={`inline-flex items-center gap-2 rounded-full border border-[color:var(--rule)] px-2 py-1 font-mono text-[10px] uppercase ${
+                isLinked
+                  ? "text-[color:var(--accent)]"
+                  : "text-[color:var(--ink-mute)]"
+              }`}
+            >
+              {isLinked ? (
+                <span className="live-dot" />
+              ) : (
+                <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--ink-mute)]" />
+              )}
+              {status}
             </span>
           </div>
         </div>
@@ -206,8 +224,12 @@ function ProjectCard({
             </span>
           </div>
           <div className="relative aspect-[4/3] overflow-hidden rounded-[6px] bg-white">
-            {project.name === "PCApp" ? (
-              <GeneratedPreview name={project.name} lang={lang} />
+            {project.preview === "generated" || !imageUrl ? (
+              <GeneratedPreview
+                name={project.name}
+                lang={lang}
+                variant={project.name === "Cyber" ? "security" : "app"}
+              />
             ) : (
               <Image
                 src={imageUrl}
@@ -238,12 +260,35 @@ function ProjectCard({
             <div className="flex items-center justify-between gap-3 border-t border-[color:var(--rule)] pt-4 font-mono text-[11px] uppercase text-[color:var(--ink-mute)]">
               <span className="min-w-0 truncate">{project.year}</span>
               <span className="shrink-0 text-[color:var(--ink)]">
-                {visit}
+                {action}
               </span>
             </div>
           </div>
         </div>
-      </a>
+    </>
+  );
+
+  return (
+    <motion.li
+      initial={{ opacity: 0, y: 16 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+      className="h-full"
+    >
+      {project.href ? (
+        <a
+          href={project.href}
+          target="_blank"
+          rel="noreferrer"
+          className={cardClass}
+        >
+          {content}
+        </a>
+      ) : (
+        <article aria-label={`${project.name} case`} className={cardClass}>
+          {content}
+        </article>
+      )}
     </motion.li>
   );
 }
@@ -251,13 +296,25 @@ function ProjectCard({
 function GeneratedPreview({
   name,
   lang,
+  variant = "app",
 }: {
   name: string;
   lang: "ru" | "en";
+  variant?: "app" | "security";
 }) {
-  const utility = lang === "ru" ? "Windows-утилита" : "Windows utility";
-  const detail =
-    lang === "ru"
+  const isSecurity = variant === "security";
+  const utility = isSecurity
+    ? lang === "ru"
+      ? "кибербез-практика"
+      : "security practice"
+    : lang === "ru"
+      ? "Windows-утилита"
+      : "Windows utility";
+  const detail = isSecurity
+    ? lang === "ru"
+      ? "аудит / контент / защита"
+      : "audit / content / protection"
+    : lang === "ru"
       ? "скачивание / обновления / поддержка"
       : "downloads / updates / support";
 
@@ -282,7 +339,7 @@ function GeneratedPreview({
       <rect x="250" y="146" width="138" height="12" rx="6" fill="white" opacity="0.76" />
       <rect x="250" y="174" width="188" height="10" rx="5" fill="white" opacity="0.28" />
       <text x="54" y="298" fill="#e2ff67" fontSize="30" fontFamily="monospace" fontWeight="700">
-        PCApp
+        {name}
       </text>
       <text x="250" y="292" fill="#f7f8f3" fontSize="16" fontFamily="monospace">
         {utility}

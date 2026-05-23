@@ -27,7 +27,7 @@ export function Manifesto() {
             </div>
             <h2
               aria-label={`${t.manifesto.h1} ${t.manifesto.h2em} ${t.manifesto.h2} ${t.manifesto.h3}`}
-              className="display max-w-[760px] text-[40px] sm:text-[54px] md:text-[68px]"
+              className="display max-w-[760px] text-[36px] min-[380px]:text-[40px] sm:text-[54px] md:text-[68px]"
             >
               {t.manifesto.h1}{" "}
               <span className="text-[color:var(--signal)]">

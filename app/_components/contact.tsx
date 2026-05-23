@@ -17,6 +17,7 @@ export function Contact() {
           legal: "Реквизиты",
           company: "ТОО Turanix",
           bin: "БИН 260540022744",
+          telegram: "Telegram — по запросу",
         }
       : {
           email: "Email",
@@ -24,6 +25,7 @@ export function Contact() {
           legal: "Legal",
           company: "Turanix LLP",
           bin: "BIN 260540022744",
+          telegram: "Telegram on request",
         };
 
   return (
@@ -45,7 +47,7 @@ export function Contact() {
             </div>
             <h2
               aria-label={`${t.contact.h1} ${t.contact.h2em} ${t.contact.h2}`}
-              className="display max-w-[820px] text-[44px] sm:text-[64px] md:text-[82px]"
+              className="display max-w-[820px] text-[38px] min-[380px]:text-[44px] sm:text-[64px] md:text-[82px]"
             >
               {t.contact.h1}{" "}
               <span className="text-[color:var(--signal)]">
@@ -73,9 +75,7 @@ export function Contact() {
             </InfoBlock>
             <InfoBlock label={t.contact.channels}>
               <a href="mailto:hello@turanix.kz">{copy.email}</a>
-              <a href="https://t.me/turanix" target="_blank" rel="noreferrer">
-                Telegram
-              </a>
+              <span>{copy.telegram}</span>
             </InfoBlock>
             <InfoBlock label={copy.scope}>
               {t.contact.scope.map((line) => (

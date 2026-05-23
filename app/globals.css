@@ -39,11 +39,13 @@
 html {
   scroll-behavior: auto;
   background: var(--bg);
+  overflow-x: hidden;
 }
 
 body {
   min-width: 320px;
   margin: 0;
+  overflow-x: clip;
   background:
     linear-gradient(180deg, #fbfbf7 0, var(--bg) 520px, #eef1eb 100%);
   color: var(--ink);
@@ -278,13 +280,19 @@ footer {
   }
 
   .section-title {
-    font-size: 38px;
+    font-size: 36px;
   }
 
   .button-primary,
   .button-secondary,
   .button-dark {
     width: 100%;
+  }
+}
+
+@media (min-width: 380px) and (max-width: 720px) {
+  .section-title {
+    font-size: 38px;
   }
 }
 

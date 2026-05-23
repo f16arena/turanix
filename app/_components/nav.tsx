@@ -42,7 +42,7 @@ export function Nav() {
             width={310}
             height={65}
             priority
-            className="h-8 w-auto max-w-[156px] invert sm:max-w-[190px]"
+            className="h-8 w-auto max-w-[118px] invert min-[380px]:max-w-[148px] sm:max-w-[190px]"
           />
           <span className="hidden border-l border-white/14 pl-3 font-mono text-[10px] uppercase text-white/52 sm:inline">
             {lang === "ru" ? "ТОО / KZ" : "LLP / KZ"}

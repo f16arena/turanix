@@ -49,19 +49,11 @@ export function Footer() {
           </FooterColumn>
 
           <FooterColumn title={t.footer.elsewhere}>
-            <a href="https://t.me/turanix" target="_blank" rel="noreferrer">
-              Telegram
-            </a>
-            <a
-              href="https://instagram.com/turanix"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Instagram
-            </a>
             <a href="mailto:hello@turanix.kz">
               {lang === "ru" ? "Почта" : "Email"}
             </a>
+            <span>{lang === "ru" ? "Telegram — по запросу" : "Telegram on request"}</span>
+            <span>{lang === "ru" ? "Соцсети после запуска" : "Social accounts after launch"}</span>
           </FooterColumn>
 
           <FooterColumn title={t.footer.documents}>
