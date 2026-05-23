@@ -96,7 +96,7 @@ export default function OpenGraphImage() {
         >
           <span>turanix.kz</span>
           <span>·</span>
-          <span>hello@turanix.kz</span>
+          <span>info@turanix.kz</span>
           <span>·</span>
           <span>БИН 260540022744</span>
         </div>

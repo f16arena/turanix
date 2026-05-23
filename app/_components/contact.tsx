@@ -59,10 +59,10 @@ export function Contact() {
               {t.contact.lede}
             </p>
             <a
-              href="mailto:hello@turanix.kz"
+              href="mailto:info@turanix.kz"
               className="button-primary mt-9 w-full sm:w-auto"
             >
-              hello@turanix.kz
+              info@turanix.kz
               <Arrow />
             </a>
           </div>
@@ -74,7 +74,7 @@ export function Contact() {
               ))}
             </InfoBlock>
             <InfoBlock label={t.contact.channels}>
-              <a href="mailto:hello@turanix.kz">{copy.email}</a>
+              <a href="mailto:info@turanix.kz">{copy.email}</a>
               <span>{copy.telegram}</span>
             </InfoBlock>
             <InfoBlock label={copy.scope}>

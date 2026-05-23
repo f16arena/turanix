@@ -49,7 +49,7 @@ export function Footer() {
           </FooterColumn>
 
           <FooterColumn title={t.footer.elsewhere}>
-            <a href="mailto:hello@turanix.kz">
+            <a href="mailto:info@turanix.kz">
               {lang === "ru" ? "Почта" : "Email"}
             </a>
             <span>{lang === "ru" ? "Telegram — по запросу" : "Telegram on request"}</span>

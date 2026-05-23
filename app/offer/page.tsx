@@ -53,7 +53,7 @@ export default function OfferPage() {
               <li>
                 Руководитель и учредитель: Кенесқанов Арыстанбек Жомартұлы.
               </li>
-              <li>Email для связи и юридически значимых сообщений: hello@turanix.kz.</li>
+              <li>Email для связи и юридически значимых сообщений: info@turanix.kz.</li>
             </ul>
           ),
         },

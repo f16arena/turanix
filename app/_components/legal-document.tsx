@@ -37,7 +37,7 @@ export function LegalDocument({
             href="/#contact"
             className="min-w-0 truncate font-mono text-[10px] uppercase text-[color:var(--ink-mute)] hover:text-[color:var(--ink)]"
           >
-            hello@turanix.kz
+            info@turanix.kz
           </Link>
         </header>
 
