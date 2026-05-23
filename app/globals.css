@@ -1,26 +1,298 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f3f4ef;
+  --paper: #ffffff;
+  --paper-soft: #ecefe8;
+  --ink: #0d0f12;
+  --ink-soft: #59616a;
+  --ink-mute: #8d949b;
+  --rule: rgba(13, 15, 18, 0.13);
+  --rule-strong: rgba(13, 15, 18, 0.25);
+  --dark: #0d0f12;
+  --dark-2: #151a1f;
+  --dark-3: #20272e;
+  --accent: #008f72;
+  --accent-2: #355cff;
+  --signal: #e2ff67;
+  --ok: #22c55e;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-mute: var(--ink-mute);
+  --color-rule: var(--rule);
+  --color-accent: var(--accent);
+  --color-ok: var(--ok);
+  --font-sans: var(--font-display);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+  background: var(--bg);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-width: 320px;
+  margin: 0;
+  background:
+    linear-gradient(180deg, #fbfbf7 0, var(--bg) 520px, #eef1eb 100%);
+  color: var(--ink);
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "ss02", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(13, 15, 18, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(13, 15, 18, 0.025) 1px, transparent 1px);
+  background-size: 96px 96px;
+  mask-image: linear-gradient(to bottom, transparent, black 18%, black 62%, transparent);
+}
+
+main,
+header,
+footer {
+  position: relative;
+  z-index: 1;
+}
+
+::selection {
+  background: var(--dark);
+  color: var(--signal);
+}
+
+.font-serif {
+  font-family: var(--font-serif), "Times New Roman", serif;
+}
+
+.font-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.display {
+  letter-spacing: 0;
+  line-height: 1;
+  font-weight: 650;
+}
+
+.eyebrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.container-wide {
+  width: min(100% - 40px, 1380px);
+  margin-inline: auto;
+}
+
+.section {
+  padding: 104px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.section-title {
+  max-width: 820px;
+  font-size: 72px;
+}
+
+.surface {
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  box-shadow: 0 26px 80px -64px rgba(13, 15, 18, 0.55);
+}
+
+.surface-dark {
+  color: #f7f8f3;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background:
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    var(--dark);
+  background-size: 44px 44px, 44px 44px, auto;
+}
+
+.button-primary,
+.button-secondary,
+.button-dark {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 620;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.button-primary {
+  background: var(--signal);
+  color: var(--dark);
+}
+
+.button-secondary {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f7f8f3;
+}
+
+.button-dark {
+  background: var(--dark);
+  color: #f7f8f3;
+}
+
+.button-primary:hover,
+.button-secondary:hover,
+.button-dark:hover {
+  transform: translateY(-1px);
+}
+
+.button-secondary:hover {
+  border-color: rgba(255, 255, 255, 0.42);
+}
+
+.button-dark:hover {
+  color: var(--signal);
+}
+
+.tech-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--paper);
+  padding: 4px 8px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--ok);
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5);
+  animation: live-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+}
+
+.marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 36s linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.legal-copy p + p,
+.legal-copy p + ul,
+.legal-copy p + ol,
+.legal-copy ul + p,
+.legal-copy ol + p {
+  margin-top: 14px;
+}
+
+.legal-copy ul,
+.legal-copy ol {
+  padding-left: 18px;
+}
+
+.legal-copy ul {
+  list-style: square;
+}
+
+.legal-copy ol {
+  list-style: decimal;
+}
+
+.legal-copy li + li {
+  margin-top: 8px;
+}
+
+.legal-copy a {
+  color: var(--ink);
+  border-bottom: 1px solid var(--rule);
+}
+
+@media (max-width: 1100px) {
+  .section-title {
+    font-size: 56px;
+  }
+}
+
+@media (max-width: 720px) {
+  .container-wide {
+    width: min(100% - 28px, 1380px);
+  }
+
+  .section {
+    padding: 72px 0;
+  }
+
+  .section-title {
+    font-size: 38px;
+  }
+
+  .button-primary,
+  .button-secondary,
+  .button-dark {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }
