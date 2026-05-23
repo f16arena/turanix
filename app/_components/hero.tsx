@@ -25,18 +25,15 @@ export function Hero() {
   const { lang } = useLang();
 
   return (
-    <section
-      id="top"
-      className="relative overflow-hidden bg-[color:var(--dark)] pb-12 pt-[96px] text-white"
-    >
+    <section id="top" className="relative overflow-hidden pb-12 pt-[86px]">
       <div className="container-wide">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, ease }}
-          className="flex flex-wrap items-center justify-between gap-3 border-y border-white/12 py-3 font-mono text-[11px] uppercase text-white/58"
+          className="flex flex-wrap items-center justify-between gap-3 border-y border-[color:var(--rule)] py-3 font-mono text-[11px] uppercase text-[color:var(--ink-mute)]"
         >
-          <span className="inline-flex items-center gap-2 text-white">
+          <span className="inline-flex items-center gap-2 text-[color:var(--ink)]">
             <span className="live-dot" />
             {t.status.operational}
           </span>
@@ -44,36 +41,36 @@ export function Hero() {
           <span>{t.status.version}</span>
         </motion.div>
 
-        <div className="grid min-h-[620px] grid-cols-1 items-center gap-10 py-12 lg:grid-cols-[1.02fr_0.98fr] lg:py-16">
+        <div className="grid min-h-[560px] grid-cols-1 items-center gap-10 py-10 lg:grid-cols-[1.05fr_0.95fr] lg:py-12">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.08, ease }}
           >
             <div className="mb-8 flex flex-wrap items-center gap-3">
-              <span className="font-mono text-[11px] uppercase text-[color:var(--signal)]">
+              <span className="font-mono text-[11px] uppercase text-[color:var(--accent)]">
                 {t.hero.eyebrow}
               </span>
-              <span className="h-px w-14 bg-white/18" />
-              <span className="font-mono text-[11px] uppercase text-white/52">
+              <span className="h-px w-14 bg-[color:var(--rule-strong)]" />
+              <span className="font-mono text-[11px] uppercase text-[color:var(--ink-mute)]">
                 {t.hero.kicker}
               </span>
             </div>
 
             <h1
               aria-label={`${t.hero.l1} ${t.hero.l2} ${t.hero.l3em}`}
-              className="display max-w-[900px] text-[38px] min-[380px]:text-[44px] sm:text-[60px] md:text-[68px] xl:text-[76px]"
+              className="display max-w-[980px] text-[40px] min-[380px]:text-[48px] sm:text-[62px] md:text-[74px] xl:text-[84px]"
             >
               <Reveal delay={0.04}>{t.hero.l1}</Reveal>
               <Reveal delay={0.14}>{t.hero.l2}</Reveal>
               <Reveal delay={0.24}>
-                <span className="text-[color:var(--signal)]">
+                <span className="text-[color:var(--accent)]">
                   {t.hero.l3em}
                 </span>
               </Reveal>
             </h1>
 
-            <p className="mt-7 max-w-[720px] text-[17px] leading-[1.65] text-white/68 md:text-[18px]">
+            <p className="mt-7 max-w-[720px] text-[17px] leading-[1.65] text-[color:var(--ink-soft)] md:text-[18px]">
               {t.hero.lede}
             </p>
 
@@ -87,19 +84,16 @@ export function Hero() {
               </a>
             </div>
 
-            <div className="mt-10 grid max-w-[760px] grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="mt-10 grid max-w-[820px] grid-cols-1 gap-3 sm:grid-cols-3">
               {t.hero.proofs.map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-lg border border-white/12 bg-white/[0.055] p-4"
-                >
-                  <div className="font-mono text-[18px] text-white">
+                <div key={item.label} className="surface p-4">
+                  <div className="font-mono text-[18px] text-[color:var(--ink)]">
                     {item.value}
                   </div>
                   <div className="mt-5 text-[14px] font-semibold">
                     {item.label}
                   </div>
-                  <div className="mt-1 text-[13px] leading-[1.45] text-white/52">
+                  <div className="mt-1 text-[13px] leading-[1.45] text-[color:var(--ink-soft)]">
                     {item.detail}
                   </div>
                 </div>
@@ -112,7 +106,7 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.18, ease }}
           >
-            <SystemMap items={t.hero.map} label={t.hero.open} lang={lang} />
+            <DeliveryPanel items={t.hero.map} label={t.hero.open} lang={lang} />
           </motion.div>
         </div>
 
@@ -120,7 +114,7 @@ export function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.9, delay: 0.45 }}
-          className="overflow-hidden border-t border-white/12 py-5"
+          className="overflow-hidden border-t border-[color:var(--rule)] py-5"
         >
           <div className="marquee">
             <StackTrack />
@@ -132,7 +126,7 @@ export function Hero() {
   );
 }
 
-function SystemMap({
+function DeliveryPanel({
   items,
   label,
   lang,
@@ -141,31 +135,38 @@ function SystemMap({
   label: string;
   lang: "ru" | "en";
 }) {
-  const [web, mobile, crm, telegram, ai] = items;
-  const mobileNodes = [web, mobile, crm, telegram, ai];
   const copy =
     lang === "ru"
       ? {
-          map: "Карта системы Turanix",
-          title: "Бизнес-система",
-          core: "Ядро",
-          stages: ["дизайн", "разработка", "поддержка"],
+          title: "Контур разработки",
+          system: "Схема Turanix",
+          lead: "Один подрядчик для сайта, приложения, интеграций и поддержки.",
+          pipeline: "Процесс",
+          stages: ["Разбор", "Дизайн", "Код", "Запуск"],
+          response: "Ответ в рабочее время",
+          phone: "Рабочий телефон",
         }
       : {
-          map: "Turanix delivery map",
-          title: "Business system",
-          core: "Core",
-          stages: ["design", "engineering", "support"],
+          title: "Delivery system",
+          system: "Turanix OS",
+          lead: "One partner for website, app, integrations and support.",
+          pipeline: "Process",
+          stages: ["Discovery", "Design", "Code", "Launch"],
+          response: "Business-hours reply",
+          phone: "Work phone",
         };
 
   return (
-    <div className="relative overflow-hidden rounded-lg border border-white/12 bg-white/[0.04] p-5 shadow-2xl shadow-black/30 md:p-7">
-      <div className="mb-8 flex items-center justify-between gap-4 border-b border-white/10 pb-4">
+    <div className="surface-dark overflow-hidden p-5 shadow-2xl shadow-black/20 md:p-7">
+      <div className="flex flex-wrap items-start justify-between gap-5 border-b border-white/10 pb-6">
         <div>
-          <div className="font-mono text-[11px] uppercase text-white/52">
-            {copy.map}
+          <div className="font-mono text-[11px] uppercase text-white/46">
+            {copy.system}
           </div>
-          <div className="mt-2 text-[20px] font-semibold">{copy.title}</div>
+          <div className="mt-2 text-[28px] font-semibold">{copy.title}</div>
+          <p className="mt-3 max-w-[430px] text-[14px] leading-[1.6] text-white/58">
+            {copy.lead}
+          </p>
         </div>
         <span className="inline-flex items-center gap-2 rounded-full bg-[color:var(--signal)] px-3 py-1.5 font-mono text-[10px] uppercase text-[color:var(--dark)]">
           <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--dark)]" />
@@ -173,116 +174,53 @@ function SystemMap({
         </span>
       </div>
 
-      <div className="grid gap-3 md:hidden">
-        {mobileNodes.map((item) => {
-          const isCore = item === crm;
-
-          return (
-            <div
-              key={item.label}
-              className={`rounded-lg border p-4 ${
-                isCore
-                  ? "border-[color:var(--signal)] bg-[color:var(--signal)] text-[color:var(--dark)]"
-                  : "border-white/12 bg-white/[0.07] text-white"
-              }`}
-            >
-              <div
-                className={`mb-5 h-1.5 w-1.5 rounded-full ${
-                  isCore ? "bg-[color:var(--dark)]" : "bg-[color:var(--signal)]"
-                }`}
-              />
-              <div className="text-[18px] font-semibold">
-                {isCore ? copy.core : item.label}
+      <div className="grid gap-3 py-6">
+        {items.map((item, index) => (
+          <div
+            key={item.label}
+            className="grid grid-cols-[42px_1fr] items-center gap-4 rounded-lg border border-white/10 bg-white/[0.055] p-4"
+          >
+            <span className="font-mono text-[11px] uppercase text-[color:var(--signal)]">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <div className="grid gap-1 sm:grid-cols-[150px_1fr] sm:items-center">
+              <div className="text-[18px] font-semibold">{item.label}</div>
+              <div className="font-mono text-[11px] uppercase text-white/44">
+                {item.detail}
               </div>
-              <div
-                className={`mt-2 font-mono text-[11px] uppercase ${
-                  isCore ? "text-black/58" : "text-white/46"
-                }`}
-              >
-                {isCore ? item.label : item.detail}
-              </div>
-              {isCore ? (
-                <div className="mt-2 text-[13px] leading-[1.45] text-black/60">
-                  {item.detail}
-                </div>
-              ) : null}
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
-      <div className="relative hidden min-h-[440px] md:block">
-        <svg
-          className="absolute inset-0 h-full w-full"
-          viewBox="0 0 620 440"
-          fill="none"
-          aria-hidden
-        >
-          <path d="M310 74V354" stroke="white" strokeOpacity="0.16" />
-          <path d="M150 132H310H470" stroke="white" strokeOpacity="0.16" />
-          <path d="M150 306H310H470" stroke="white" strokeOpacity="0.16" />
-          <path
-            d="M150 132C214 132 232 220 310 220C388 220 406 132 470 132"
-            stroke="var(--signal)"
-            strokeOpacity="0.8"
-            strokeWidth="2"
-          />
-          <path
-            d="M150 306C214 306 234 220 310 220C386 220 406 306 470 306"
-            stroke="#5c7cff"
-            strokeOpacity="0.72"
-            strokeWidth="2"
-          />
-          <circle cx="310" cy="220" r="54" fill="white" fillOpacity="0.06" />
-          <circle cx="310" cy="220" r="16" fill="var(--signal)" />
-        </svg>
-
-        <Node className="left-0 top-10" item={web} tone="lime" />
-        <Node className="right-0 top-10" item={mobile} tone="blue" />
-        <Node className="left-0 bottom-10" item={telegram} tone="blue" />
-        <Node className="right-0 bottom-10" item={ai} tone="lime" />
-
-        <div className="absolute left-1/2 top-1/2 w-[190px] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-white/14 bg-[color:var(--dark)] p-5 text-center">
-          <div className="font-mono text-[11px] uppercase text-[color:var(--signal)]">
-            {crm.label}
+      <div className="grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-2">
+        <div>
+          <div className="font-mono text-[10px] uppercase text-white/38">
+            {copy.pipeline}
           </div>
-          <div className="mt-2 text-[26px] font-semibold">{copy.core}</div>
-          <div className="mt-3 text-[12px] leading-[1.45] text-white/48">
-            {crm.detail}
+          <div className="mt-3 flex flex-wrap gap-2">
+            {copy.stages.map((stage) => (
+              <span
+                key={stage}
+                className="rounded-full border border-white/12 px-3 py-1.5 text-[12px] text-white/62"
+              >
+                {stage}
+              </span>
+            ))}
           </div>
         </div>
-      </div>
-
-      <div className="grid grid-cols-3 border-t border-white/10 pt-4 font-mono text-[10px] uppercase text-white/42">
-        <span>{copy.stages[0]}</span>
-        <span className="text-center">{copy.stages[1]}</span>
-        <span className="text-right">{copy.stages[2]}</span>
-      </div>
-    </div>
-  );
-}
-
-function Node({
-  item,
-  tone,
-  className,
-}: {
-  item: { label: string; detail: string };
-  tone: "lime" | "blue";
-  className: string;
-}) {
-  return (
-    <div
-      className={`absolute w-[145px] rounded-lg border border-white/12 bg-white/[0.07] p-4 backdrop-blur sm:w-[180px] ${className}`}
-    >
-      <div
-        className={`mb-6 h-2 w-2 rounded-full ${
-          tone === "lime" ? "bg-[color:var(--signal)]" : "bg-[#5c7cff]"
-        }`}
-      />
-      <div className="text-[18px] font-semibold">{item.label}</div>
-      <div className="mt-2 font-mono text-[11px] uppercase text-white/46">
-        {item.detail}
+        <div className="sm:text-right">
+          <div className="font-mono text-[10px] uppercase text-white/38">
+            {copy.phone}
+          </div>
+          <a
+            href="tel:+77011070260"
+            className="mt-3 block text-[18px] font-semibold text-white hover:text-[color:var(--signal)]"
+          >
+            +7 701 107 02 60
+          </a>
+          <div className="mt-1 text-[12px] text-white/42">{copy.response}</div>
+        </div>
       </div>
     </div>
   );
@@ -315,9 +253,9 @@ function StackTrack() {
       {stackChips.map((item) => (
         <span
           key={item}
-          className="flex items-center gap-3 whitespace-nowrap font-mono text-[11px] uppercase text-white/48"
+          className="flex items-center gap-3 whitespace-nowrap font-mono text-[11px] uppercase text-[color:var(--ink-mute)]"
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--signal)]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--accent)]" />
           {item}
         </span>
       ))}

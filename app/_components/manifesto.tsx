@@ -16,7 +16,7 @@ export function Manifesto() {
       className="section border-white/10 bg-[color:var(--dark)] text-white"
     >
       <div className="container-wide">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[0.92fr_1.08fr]">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[0.88fr_1.12fr]">
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -27,7 +27,7 @@ export function Manifesto() {
             </div>
             <h2
               aria-label={`${t.manifesto.h1} ${t.manifesto.h2em} ${t.manifesto.h2} ${t.manifesto.h3}`}
-              className="display max-w-[760px] text-[36px] min-[380px]:text-[40px] sm:text-[54px] md:text-[68px]"
+              className="display max-w-[760px] text-[38px] min-[380px]:text-[44px] sm:text-[58px] md:text-[72px]"
             >
               {t.manifesto.h1}{" "}
               <span className="text-[color:var(--signal)]">
@@ -35,7 +35,7 @@ export function Manifesto() {
               </span>{" "}
               {t.manifesto.h2} {t.manifesto.h3}
             </h2>
-            <p className="mt-8 max-w-[640px] text-[16px] leading-[1.7] text-white/66">
+            <p className="mt-8 max-w-[640px] text-[16px] leading-[1.75] text-white/64">
               {t.manifesto.lede}
             </p>
           </motion.div>
@@ -50,7 +50,7 @@ export function Manifesto() {
               {t.manifesto.stats.map((stat, index) => (
                 <div
                   key={stat.label}
-                  className="min-h-[180px] rounded-lg border border-white/12 bg-white/[0.055] p-5"
+                  className="min-h-[178px] rounded-lg border border-white/12 bg-white/[0.055] p-5"
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-mono text-[11px] uppercase text-white/48">
@@ -60,10 +60,10 @@ export function Manifesto() {
                       {String(index + 1).padStart(2, "0")}
                     </span>
                   </div>
-                  <div className="mt-10 text-[34px] font-semibold">
+                  <div className="mt-10 text-[30px] font-semibold leading-[1.05]">
                     {stat.value}
                   </div>
-                  <div className="mt-2 text-[13px] leading-[1.5] text-white/56">
+                  <div className="mt-3 text-[13px] leading-[1.5] text-white/56">
                     {stat.detail}
                   </div>
                 </div>
@@ -79,7 +79,7 @@ export function Manifesto() {
               {t.manifesto.principles.map((item, index) => (
                 <div
                   key={item.n}
-                  className={`grid grid-cols-1 gap-3 p-5 md:grid-cols-[70px_1fr] ${
+                  className={`grid grid-cols-1 gap-3 p-5 md:grid-cols-[84px_1fr] ${
                     index > 0 ? "border-t border-white/10" : ""
                   }`}
                 >
@@ -87,10 +87,8 @@ export function Manifesto() {
                     {item.n}
                   </span>
                   <div>
-                    <h3 className="text-[20px] font-semibold">
-                      {item.title}
-                    </h3>
-                    <p className="mt-2 text-[14px] leading-[1.55] text-white/54">
+                    <h3 className="text-[21px] font-semibold">{item.title}</h3>
+                    <p className="mt-2 text-[14px] leading-[1.6] text-white/54">
                       {item.detail}
                     </p>
                   </div>

@@ -105,7 +105,7 @@ export function Work() {
   const { lang } = useLang();
 
   return (
-    <section id="work" ref={ref} className="section bg-[#fbfbf7]">
+    <section id="work" ref={ref} className="section bg-[color:var(--bg)]">
       <div className="container-wide">
         <motion.div
           initial={{ opacity: 0, y: 14 }}
@@ -128,7 +128,7 @@ export function Work() {
           </div>
         </motion.div>
 
-        <ul className="grid auto-rows-fr grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <ul className="grid auto-rows-fr grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {projects.map((project, index) => (
             <ProjectCard
               key={project.name}
@@ -171,8 +171,7 @@ function ProjectCard({
   lang: "ru" | "en";
 }) {
   const isLinked = Boolean(project.href);
-  const status =
-    (lang === "ru" ? project.statusRu : project.statusEn) ?? live;
+  const status = (lang === "ru" ? project.statusRu : project.statusEn) ?? live;
   const action = isLinked
     ? visit
     : lang === "ru"
@@ -181,90 +180,86 @@ function ProjectCard({
   const imageUrl = project.href
     ? `https://image.thum.io/get/width/1200/crop/820/noanimate/${project.href}`
     : null;
-  const cardClass = `surface group flex h-full min-h-[500px] flex-col overflow-hidden ${
+  const cardClass = `surface group flex h-full min-h-[520px] flex-col overflow-hidden ${
     isLinked ? "" : "cursor-default"
   }`;
 
   const content = (
     <>
-        <div className="border-b border-[color:var(--rule)] p-4">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="font-mono text-[10px] uppercase text-[color:var(--ink-mute)]">
-                {project.index} / {kind}
-              </div>
-              <h3 className="mt-2 text-[24px] font-semibold leading-[1.1]">
-                {project.name}
-              </h3>
-            </div>
-            <span
-              className={`inline-flex items-center gap-2 rounded-full border border-[color:var(--rule)] px-2 py-1 font-mono text-[10px] uppercase ${
-                isLinked
-                  ? "text-[color:var(--accent)]"
-                  : "text-[color:var(--ink-mute)]"
-              }`}
-            >
-              {isLinked ? (
-                <span className="live-dot" />
-              ) : (
-                <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--ink-mute)]" />
-              )}
-              {status}
-            </span>
+      <div className="flex items-start justify-between gap-4 border-b border-[color:var(--rule)] p-5">
+        <div>
+          <div className="font-mono text-[10px] uppercase text-[color:var(--ink-mute)]">
+            {project.index} / {kind}
           </div>
+          <h3 className="mt-2 text-[28px] font-semibold leading-[1.05]">
+            {project.name}
+          </h3>
         </div>
+        <span
+          className={`inline-flex items-center gap-2 rounded-full border border-[color:var(--rule)] bg-white px-2 py-1 font-mono text-[10px] uppercase ${
+            isLinked
+              ? "text-[color:var(--accent)]"
+              : "text-[color:var(--ink-mute)]"
+          }`}
+        >
+          {isLinked ? (
+            <span className="live-dot" />
+          ) : (
+            <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--ink-mute)]" />
+          )}
+          {status}
+        </span>
+      </div>
 
-        <div className="border-b border-[color:var(--rule)] bg-[color:var(--dark)] p-2">
-          <div className="mb-2 flex items-center gap-1.5 px-1">
-            <span className="h-2 w-2 rounded-full bg-[#ff6b5f]" />
-            <span className="h-2 w-2 rounded-full bg-[#f6c34a]" />
-            <span className="h-2 w-2 rounded-full bg-[#48c774]" />
-            <span className="ml-2 truncate rounded-full bg-white/8 px-2 py-1 font-mono text-[9px] uppercase text-white/44">
-              {project.domain}
-            </span>
-          </div>
-          <div className="relative aspect-[4/3] overflow-hidden rounded-[6px] bg-white">
-            {project.preview === "generated" || !imageUrl ? (
-              <GeneratedPreview
-                name={project.name}
-                lang={lang}
-                variant={project.name === "Cyber" ? "security" : "app"}
-              />
-            ) : (
-              <Image
-                src={imageUrl}
-                alt={`${project.name} preview`}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 20vw"
-                loading="lazy"
-                decoding="async"
-                className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.025]"
-              />
-            )}
-          </div>
+      <div className="bg-[color:var(--dark)] p-3">
+        <div className="mb-3 flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-[#ff6b5f]" />
+          <span className="h-2 w-2 rounded-full bg-[#f6c34a]" />
+          <span className="h-2 w-2 rounded-full bg-[#48c774]" />
+          <span className="ml-2 truncate rounded-full bg-white/8 px-2 py-1 font-mono text-[9px] uppercase text-white/44">
+            {project.domain}
+          </span>
         </div>
+        <div className="relative aspect-[16/10] overflow-hidden rounded-[6px] bg-white">
+          {project.preview === "generated" || !imageUrl ? (
+            <GeneratedPreview
+              name={project.name}
+              lang={lang}
+              variant={project.name === "Cyber" ? "security" : "app"}
+            />
+          ) : (
+            <Image
+              src={imageUrl}
+              alt={`${project.name} preview`}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+              loading="lazy"
+              decoding="async"
+              className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.025]"
+            />
+          )}
+        </div>
+      </div>
 
-        <div className="flex flex-1 flex-col justify-between gap-8 p-4">
-          <p className="text-[14px] leading-[1.6] text-[color:var(--ink-soft)]">
-            {summary}
-          </p>
+      <div className="flex flex-1 flex-col justify-between gap-8 p-5">
+        <p className="text-[15px] leading-[1.65] text-[color:var(--ink-soft)]">
+          {summary}
+        </p>
 
-          <div>
-            <div className="mb-4 flex flex-wrap gap-1.5">
-              {tags.map((tag) => (
-                <span key={tag} className="tech-badge">
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <div className="flex items-center justify-between gap-3 border-t border-[color:var(--rule)] pt-4 font-mono text-[11px] uppercase text-[color:var(--ink-mute)]">
-              <span className="min-w-0 truncate">{project.year}</span>
-              <span className="shrink-0 text-[color:var(--ink)]">
-                {action}
+        <div>
+          <div className="mb-5 flex flex-wrap gap-1.5">
+            {tags.map((tag) => (
+              <span key={tag} className="tech-badge">
+                {tag}
               </span>
-            </div>
+            ))}
+          </div>
+          <div className="flex items-center justify-between gap-3 border-t border-[color:var(--rule)] pt-4 font-mono text-[11px] uppercase text-[color:var(--ink-mute)]">
+            <span className="min-w-0 truncate">{project.year}</span>
+            <span className="shrink-0 text-[color:var(--ink)]">{action}</span>
           </div>
         </div>
+      </div>
     </>
   );
 
@@ -321,30 +316,30 @@ function GeneratedPreview({
   return (
     <svg
       className="absolute inset-0 h-full w-full transition-transform duration-700 group-hover:scale-[1.025]"
-      viewBox="0 0 520 390"
+      viewBox="0 0 520 325"
       role="img"
       aria-label={`${name} product preview`}
     >
-      <rect width="520" height="390" fill="#101216" />
-      <path d="M0 86H520" stroke="white" strokeOpacity="0.08" />
-      <rect x="30" y="28" width="138" height="18" rx="9" fill="white" opacity="0.18" />
-      <rect x="348" y="28" width="110" height="18" rx="9" fill="#e2ff67" />
-      <rect x="30" y="116" width="168" height="220" rx="10" fill="white" opacity="0.07" />
-      <rect x="226" y="116" width="264" height="86" rx="10" fill="white" opacity="0.1" />
-      <rect x="226" y="226" width="124" height="110" rx="10" fill="#355cff" opacity="0.78" />
-      <rect x="366" y="226" width="124" height="110" rx="10" fill="#e2ff67" opacity="0.9" />
-      <rect x="54" y="146" width="74" height="10" rx="5" fill="white" opacity="0.8" />
-      <rect x="54" y="174" width="112" height="10" rx="5" fill="white" opacity="0.34" />
-      <rect x="54" y="198" width="94" height="10" rx="5" fill="white" opacity="0.24" />
-      <rect x="250" y="146" width="138" height="12" rx="6" fill="white" opacity="0.76" />
-      <rect x="250" y="174" width="188" height="10" rx="5" fill="white" opacity="0.28" />
-      <text x="54" y="298" fill="#e2ff67" fontSize="30" fontFamily="monospace" fontWeight="700">
+      <rect width="520" height="325" fill="#101216" />
+      <path d="M0 72H520" stroke="white" strokeOpacity="0.08" />
+      <rect x="30" y="27" width="138" height="14" rx="7" fill="white" opacity="0.18" />
+      <rect x="348" y="27" width="110" height="14" rx="7" fill="#d7ff4f" />
+      <rect x="30" y="104" width="168" height="172" rx="10" fill="white" opacity="0.07" />
+      <rect x="226" y="104" width="264" height="68" rx="10" fill="white" opacity="0.1" />
+      <rect x="226" y="192" width="124" height="84" rx="10" fill="#355cff" opacity="0.78" />
+      <rect x="366" y="192" width="124" height="84" rx="10" fill="#d7ff4f" opacity="0.9" />
+      <rect x="54" y="132" width="74" height="10" rx="5" fill="white" opacity="0.8" />
+      <rect x="54" y="158" width="112" height="10" rx="5" fill="white" opacity="0.34" />
+      <rect x="54" y="180" width="94" height="10" rx="5" fill="white" opacity="0.24" />
+      <rect x="250" y="132" width="138" height="10" rx="5" fill="white" opacity="0.76" />
+      <rect x="250" y="156" width="188" height="9" rx="4.5" fill="white" opacity="0.28" />
+      <text x="54" y="248" fill="#d7ff4f" fontSize="28" fontFamily="monospace" fontWeight="700">
         {name}
       </text>
-      <text x="250" y="292" fill="#f7f8f3" fontSize="16" fontFamily="monospace">
+      <text x="250" y="242" fill="#f7f8f3" fontSize="15" fontFamily="monospace">
         {utility}
       </text>
-      <text x="250" y="316" fill="#f7f8f3" opacity="0.58" fontSize="13" fontFamily="monospace">
+      <text x="250" y="265" fill="#f7f8f3" opacity="0.58" fontSize="12" fontFamily="monospace">
         {detail}
       </text>
     </svg>

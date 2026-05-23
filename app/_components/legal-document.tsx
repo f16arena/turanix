@@ -33,12 +33,17 @@ export function LegalDocument({
               className="h-8 w-auto max-w-[120px] min-[380px]:max-w-[160px] sm:max-w-[180px]"
             />
           </Link>
-          <Link
-            href="/#contact"
-            className="min-w-0 truncate font-mono text-[10px] uppercase text-[color:var(--ink-mute)] hover:text-[color:var(--ink)]"
-          >
-            info@turanix.kz
-          </Link>
+          <div className="grid gap-1 text-right font-mono text-[10px] uppercase text-[color:var(--ink-mute)]">
+            <Link
+              href="/#contact"
+              className="min-w-0 truncate hover:text-[color:var(--ink)]"
+            >
+              info@turanix.kz
+            </Link>
+            <a href="tel:+77011070260" className="hidden hover:text-[color:var(--ink)] sm:block">
+              +7 701 107 02 60
+            </a>
+          </div>
         </header>
 
         <section className="surface-dark mb-6 p-6 md:p-10">

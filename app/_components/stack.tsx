@@ -10,7 +10,7 @@ export function Stack() {
   const t = useT();
 
   return (
-    <section id="stack" ref={ref} className="section bg-[color:var(--bg)]">
+    <section id="stack" ref={ref} className="section bg-[#fbfcf8]">
       <div className="container-wide">
         <motion.div
           initial={{ opacity: 0, y: 14 }}
@@ -43,7 +43,7 @@ export function Stack() {
             {t.stack.groups.map((group, index) => (
               <div
                 key={group.label}
-                className="min-h-[270px] border-b border-[color:var(--rule)] p-5 md:border-b-0 md:border-r last:md:border-r-0"
+                className="min-h-[250px] border-b border-[color:var(--rule)] p-5 md:border-b-0 md:border-r last:md:border-r-0"
               >
                 <div className="flex items-center justify-between border-b border-[color:var(--rule)] pb-4">
                   <span className="font-mono text-[11px] uppercase text-[color:var(--ink)]">

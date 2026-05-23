@@ -26,11 +26,11 @@ const mono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Turanix — IT-разработка, автоматизация и AI-интеграции",
+    default: "Turanix - IT-разработка, автоматизация и ИИ-интеграции",
     template: "%s · Turanix",
   },
   description:
-    "ТОО «Turanix» разрабатывает сайты, мобильные приложения, бизнес-автоматизацию, Telegram-интеграции и AI-консультантов для компаний в Казахстане.",
+    "ТОО «Turanix» разрабатывает сайты, мобильные приложения, бизнес-автоматизацию, Telegram-интеграции и ИИ-консультантов для компаний в Казахстане.",
   metadataBase: new URL("https://turanix.kz"),
   alternates: {
     canonical: "/",
@@ -41,13 +41,13 @@ export const metadata: Metadata = {
     "мобильные приложения",
     "автоматизация бизнеса",
     "Telegram бот",
-    "AI консультант",
+    "ИИ консультант",
     "Усть-Каменогорск",
   ],
   openGraph: {
-    title: "Turanix — IT-продукты для бизнеса",
+    title: "Turanix - IT-продукты для бизнеса",
     description:
-      "Сайты, мобильные приложения, автоматизация бизнеса, Telegram-интеграции и AI-консультанты.",
+      "Сайты, мобильные приложения, автоматизация бизнеса, Telegram-интеграции и ИИ-консультанты.",
     url: "https://turanix.kz",
     siteName: "Turanix",
     locale: "ru_KZ",
@@ -55,9 +55,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Turanix — IT-продукты для бизнеса",
+    title: "Turanix - IT-продукты для бизнеса",
     description:
-      "Разработка сайтов, мобильных приложений, автоматизации, Telegram и AI-интеграций.",
+      "Разработка сайтов, мобильных приложений, автоматизации, Telegram и ИИ-интеграций.",
   },
 };
 

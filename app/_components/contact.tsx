@@ -4,6 +4,10 @@ import { motion, useInView } from "motion/react";
 import { useRef } from "react";
 import { useLang, useT } from "../_lib/i18n";
 
+const phone = "+7 701 107 02 60";
+const phoneHref = "tel:+77011070260";
+const whatsappHref = "https://wa.me/77011070260";
+
 export function Contact() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-12%" });
@@ -13,19 +17,27 @@ export function Contact() {
     lang === "ru"
       ? {
           email: "Почта",
+          phone: "Телефон",
+          whatsapp: "WhatsApp",
           scope: "Задача",
           legal: "Реквизиты",
-          company: "ТОО Turanix",
+          company: "ТОО «Turanix»",
           bin: "БИН 260540022744",
-          telegram: "Telegram — по запросу",
+          telegram: "Telegram - по запросу",
+          write: "Написать",
+          call: "Позвонить",
         }
       : {
           email: "Email",
+          phone: "Phone",
+          whatsapp: "WhatsApp",
           scope: "Scope",
           legal: "Legal",
           company: "Turanix LLP",
           bin: "BIN 260540022744",
           telegram: "Telegram on request",
+          write: "Write",
+          call: "Call",
         };
 
   return (
@@ -39,7 +51,7 @@ export function Contact() {
           initial={{ opacity: 0, y: 14 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-          className="grid grid-cols-1 gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-end"
+          className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_1fr] lg:items-end"
         >
           <div>
             <div className="mb-5 font-mono text-[11px] uppercase text-[color:var(--signal)]">
@@ -47,7 +59,7 @@ export function Contact() {
             </div>
             <h2
               aria-label={`${t.contact.h1} ${t.contact.h2em} ${t.contact.h2}`}
-              className="display max-w-[820px] text-[38px] min-[380px]:text-[44px] sm:text-[64px] md:text-[82px]"
+              className="display max-w-[900px] text-[40px] min-[380px]:text-[48px] sm:text-[68px] md:text-[86px]"
             >
               {t.contact.h1}{" "}
               <span className="text-[color:var(--signal)]">
@@ -55,16 +67,18 @@ export function Contact() {
               </span>{" "}
               {t.contact.h2}
             </h2>
-            <p className="mt-8 max-w-[680px] text-[16px] leading-[1.7] text-white/66">
+            <p className="mt-8 max-w-[700px] text-[16px] leading-[1.75] text-white/64">
               {t.contact.lede}
             </p>
-            <a
-              href="mailto:info@turanix.kz"
-              className="button-primary mt-9 w-full sm:w-auto"
-            >
-              info@turanix.kz
-              <Arrow />
-            </a>
+            <div className="mt-9 flex flex-wrap gap-3">
+              <a href="mailto:info@turanix.kz" className="button-accent">
+                info@turanix.kz
+                <Arrow />
+              </a>
+              <a href={phoneHref} className="button-dark">
+                {phone}
+              </a>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -74,7 +88,11 @@ export function Contact() {
               ))}
             </InfoBlock>
             <InfoBlock label={t.contact.channels}>
-              <a href="mailto:info@turanix.kz">{copy.email}</a>
+              <a href="mailto:info@turanix.kz">{copy.email}: info@turanix.kz</a>
+              <a href={phoneHref}>{copy.phone}: {phone}</a>
+              <a href={whatsappHref} target="_blank" rel="noreferrer">
+                {copy.whatsapp}
+              </a>
               <span>{copy.telegram}</span>
             </InfoBlock>
             <InfoBlock label={copy.scope}>
@@ -101,11 +119,11 @@ function InfoBlock({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-[170px] rounded-lg border border-white/12 bg-white/[0.055] p-5">
+    <div className="min-h-[182px] rounded-lg border border-white/12 bg-white/[0.055] p-5">
       <div className="mb-8 font-mono text-[11px] uppercase text-[color:var(--signal)]">
         {label}
       </div>
-      <div className="grid gap-1 text-[14px] leading-[1.55] text-white/68 [&_a:hover]:text-white">
+      <div className="grid gap-1.5 text-[14px] leading-[1.55] text-white/68 [&_a:hover]:text-white">
         {children}
       </div>
     </div>

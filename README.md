@@ -2,7 +2,9 @@
 
 Premium corporate landing page for Turanix LLP, an IT company from Kazakhstan building websites, mobile apps, business automation, Telegram integrations and AI consultants.
 
-Live: https://turanix.vercel.app
+Live: https://turanix.kz
+
+Contact: info@turanix.kz / +7 701 107 02 60
 
 ## Stack
 

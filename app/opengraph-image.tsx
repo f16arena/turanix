@@ -82,7 +82,7 @@ export default function OpenGraphImage() {
               color: "rgba(247,248,243,0.64)",
             }}
           >
-            Сайты · Мобайл · CRM · Telegram · AI-консультанты
+            Сайты · Мобайл · CRM · Telegram · ИИ-консультанты
           </div>
         </div>
 

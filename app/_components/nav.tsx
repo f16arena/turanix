@@ -30,11 +30,13 @@ export function Nav() {
       initial={{ y: -14, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-      className={`fixed inset-x-0 top-0 z-50 border-b border-white/10 text-white transition-colors duration-300 ${
-        scrolled ? "bg-[color:var(--dark)]/94 backdrop-blur-xl" : "bg-[color:var(--dark)]"
+      className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300 ${
+        scrolled
+          ? "border-[color:var(--rule)] bg-[#fbfcf8]/92 text-[color:var(--ink)] backdrop-blur-xl"
+          : "border-transparent bg-[#fbfcf8]/76 text-[color:var(--ink)] backdrop-blur-md"
       }`}
     >
-      <div className="container-wide flex h-[68px] items-center justify-between gap-4">
+      <div className="container-wide flex h-[70px] items-center justify-between gap-4">
         <a href="#top" className="flex min-w-0 items-center gap-3">
           <Image
             src="/brand/turanix-logo-full.png"
@@ -42,19 +44,19 @@ export function Nav() {
             width={310}
             height={65}
             priority
-            className="h-8 w-auto max-w-[118px] invert min-[380px]:max-w-[148px] sm:max-w-[190px]"
+            className="h-8 w-auto max-w-[126px] min-[380px]:max-w-[150px] sm:max-w-[188px]"
           />
-          <span className="hidden border-l border-white/14 pl-3 font-mono text-[10px] uppercase text-white/52 sm:inline">
+          <span className="hidden border-l border-[color:var(--rule)] pl-3 font-mono text-[10px] uppercase text-[color:var(--ink-mute)] sm:inline">
             {lang === "ru" ? "ТОО / KZ" : "LLP / KZ"}
           </span>
         </a>
 
-        <nav className="hidden items-center gap-1 rounded-full border border-white/12 bg-white/[0.055] p-1 lg:flex">
+        <nav className="hidden items-center gap-1 rounded-full border border-[color:var(--rule)] bg-white/68 p-1 lg:flex">
           {links.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="rounded-full px-3 py-2 text-[13px] text-white/66 transition-colors hover:bg-white/10 hover:text-white"
+              className="rounded-full px-3 py-2 text-[13px] text-[color:var(--ink-soft)] transition-colors hover:bg-[color:var(--ink)] hover:text-white"
             >
               {link.label}
             </a>
@@ -62,11 +64,17 @@ export function Nav() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <a
+            href="tel:+77011070260"
+            className="hidden font-mono text-[11px] uppercase text-[color:var(--ink-soft)] transition-colors hover:text-[color:var(--ink)] xl:inline"
+          >
+            +7 701 107 02 60
+          </a>
           <LangToggle lang={lang} setLang={setLang} />
           <a
             href="#contact"
             aria-label={t.nav.cta}
-            className="inline-flex h-9 items-center gap-2 rounded-full bg-[color:var(--signal)] px-3 text-[13px] font-semibold text-[color:var(--dark)] transition-transform hover:-translate-y-px"
+            className="inline-flex h-9 items-center gap-2 rounded-full bg-[color:var(--ink)] px-3 text-[13px] font-semibold text-white transition-transform hover:-translate-y-px hover:text-[color:var(--signal)]"
           >
             <span className="hidden sm:inline">{t.nav.cta}</span>
             <Arrow />
@@ -85,7 +93,7 @@ function LangToggle({
   setLang: (l: "ru" | "en") => void;
 }) {
   return (
-    <div className="inline-flex h-9 items-center rounded-full border border-white/12 bg-white/[0.055] p-1 font-mono text-[10px] uppercase">
+    <div className="inline-flex h-9 items-center rounded-full border border-[color:var(--rule)] bg-white/68 p-1 font-mono text-[10px] uppercase">
       {(["ru", "en"] as const).map((item) => (
         <button
           key={item}
@@ -94,8 +102,8 @@ function LangToggle({
           aria-pressed={lang === item}
           className={`h-7 rounded-full px-2.5 transition-colors ${
             lang === item
-              ? "bg-white text-[color:var(--dark)]"
-              : "text-white/58 hover:text-white"
+              ? "bg-[color:var(--ink)] text-white"
+              : "text-[color:var(--ink-mute)] hover:text-[color:var(--ink)]"
           }`}
         >
           {item}
