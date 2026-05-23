@@ -1,0 +1,7 @@
+.claude
+.dev.log
+.git
+node_modules
+.next
+coverage
+*.tsbuildinfo
