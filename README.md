@@ -1,13 +1,15 @@
 # Turanix
 
-Corporate landing page for Turanix LLP: websites, mobile apps, business automation, Telegram integrations and AI consultants.
+Premium corporate landing page for Turanix LLP, an IT company from Kazakhstan building websites, mobile apps, business automation, Telegram integrations and AI consultants.
+
+Live: https://turanix.vercel.app
 
 ## Stack
 
-- Next.js App Router
+- Next.js 16 App Router
 - TypeScript
-- React
-- Tailwind CSS
+- React 19
+- Tailwind CSS 4
 - Motion
 - Lenis
 
@@ -26,3 +28,8 @@ Local URL: `http://localhost:3000`
 npm run build
 npm run start
 ```
+
+## Legal Pages
+
+- `/offer` — public offer
+- `/privacy` — privacy policy
