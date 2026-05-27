@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 import Image from "next/image";
 import { useLang, useT } from "../_lib/i18n";
 
-export function Nav() {
+export function Nav({ isAuthed = false }: { isAuthed?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const { lang, setLang } = useLang();
   const t = useT();
@@ -71,14 +71,35 @@ export function Nav() {
             +7 701 107 02 60
           </a>
           <LangToggle lang={lang} setLang={setLang} />
-          <a
-            href="#contact"
-            aria-label={t.nav.cta}
-            className="inline-flex h-9 items-center gap-2 rounded-full bg-[color:var(--ink)] px-3 text-[13px] font-semibold text-white transition-transform hover:-translate-y-px hover:text-[color:var(--signal)]"
-          >
-            <span className="hidden sm:inline">{t.nav.cta}</span>
-            <Arrow />
-          </a>
+          {isAuthed ? (
+            <a
+              href="/dashboard"
+              className="inline-flex h-9 items-center gap-2 rounded-full bg-[color:var(--ink)] px-3 text-[13px] font-semibold text-white transition-transform hover:-translate-y-px hover:text-[color:var(--signal)]"
+            >
+              <span className="hidden sm:inline">
+                {lang === "ru" ? "В кабинет" : "Dashboard"}
+              </span>
+              <Arrow />
+            </a>
+          ) : (
+            <>
+              <a
+                href="/login"
+                className="hidden h-9 items-center rounded-full border border-[color:var(--rule)] bg-white/68 px-3 text-[13px] text-[color:var(--ink-soft)] transition-colors hover:text-[color:var(--ink)] sm:inline-flex"
+              >
+                {lang === "ru" ? "Войти" : "Sign in"}
+              </a>
+              <a
+                href="/signup"
+                className="inline-flex h-9 items-center gap-2 rounded-full bg-[color:var(--ink)] px-3 text-[13px] font-semibold text-white transition-transform hover:-translate-y-px hover:text-[color:var(--signal)]"
+              >
+                <span className="hidden sm:inline">
+                  {lang === "ru" ? "Открыть кабинет" : "Open dashboard"}
+                </span>
+                <Arrow />
+              </a>
+            </>
+          )}
         </div>
       </div>
     </motion.header>
