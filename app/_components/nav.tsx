@@ -82,23 +82,15 @@ export function Nav({ isAuthed = false }: { isAuthed?: boolean }) {
               <Arrow />
             </a>
           ) : (
-            <>
-              <a
-                href="/login"
-                className="hidden h-9 items-center rounded-full border border-[color:var(--rule)] bg-white/68 px-3 text-[13px] text-[color:var(--ink-soft)] transition-colors hover:text-[color:var(--ink)] sm:inline-flex"
-              >
-                {lang === "ru" ? "Войти" : "Sign in"}
-              </a>
-              <a
-                href="/signup"
-                className="inline-flex h-9 items-center gap-2 rounded-full bg-[color:var(--ink)] px-3 text-[13px] font-semibold text-white transition-transform hover:-translate-y-px hover:text-[color:var(--signal)]"
-              >
-                <span className="hidden sm:inline">
-                  {lang === "ru" ? "Открыть кабинет" : "Open dashboard"}
-                </span>
-                <Arrow />
-              </a>
-            </>
+            <a
+              href="/login"
+              className="inline-flex h-9 items-center gap-2 rounded-full bg-[color:var(--ink)] px-3 text-[13px] font-semibold text-white transition-transform hover:-translate-y-px hover:text-[color:var(--signal)]"
+            >
+              <span className="hidden sm:inline">
+                {lang === "ru" ? "Войти в кабинет" : "Sign in"}
+              </span>
+              <Arrow />
+            </a>
           )}
         </div>
       </div>

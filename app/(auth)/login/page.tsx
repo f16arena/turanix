@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState } from "react";
 import { login, type AuthState } from "../actions";
 
@@ -46,14 +45,8 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <p className="mt-6 text-center text-[13px] text-[color:var(--ink-soft)]">
-        Нет аккаунта?{" "}
-        <Link
-          href="/signup"
-          className="font-semibold text-[color:var(--ink)] underline-offset-2 hover:underline"
-        >
-          Создать
-        </Link>
+      <p className="mt-6 text-center text-[12px] text-[color:var(--ink-mute)]">
+        Доступ только по приглашению администратора.
       </p>
     </>
   );
