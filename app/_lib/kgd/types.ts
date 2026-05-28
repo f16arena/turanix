@@ -50,11 +50,11 @@ export type KgdTaxpayerSearchInput =
       print?: boolean;
     };
 
-export type KgdSearchResult =
+export type KgdResult<T = unknown> =
   | {
       ok: true;
       status: number;
-      data: KgdTaxpayerData;
+      data: T;
     }
   | {
       ok: false;
@@ -69,3 +69,36 @@ export type KgdSearchResult =
       missing?: string[];
       details?: string;
     };
+
+export type KgdSearchResult = KgdResult<KgdTaxpayerData>;
+
+export type KgdTaxpayerKind = "UL" | "UL_NR" | "IP" | "LZCHP";
+
+export type KgdCounterpartyInput = {
+  taxpayerCode: string;
+  taxpayerType?: KgdTaxpayerKind;
+  name?: string;
+};
+
+export type KgdServiceRunStatus = "success" | "error" | "skipped";
+
+export type KgdServiceRun = {
+  serviceId: string;
+  title: string;
+  method: string;
+  path: string;
+  status: KgdServiceRunStatus;
+  httpStatus?: number;
+  data?: unknown;
+  error?: string;
+  details?: string;
+  reason?: string;
+};
+
+export type KgdCounterpartyCheck = {
+  taxpayerCode: string;
+  taxpayerType: KgdTaxpayerKind;
+  name: string;
+  checkedAt: string;
+  runs: KgdServiceRun[];
+};

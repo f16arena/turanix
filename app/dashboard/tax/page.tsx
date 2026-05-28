@@ -67,6 +67,9 @@ export default function TaxPage() {
           <Link href="/dashboard/tax/kgd" className="button-primary">
             Мои данные из КГД
           </Link>
+          <Link href="/dashboard/tax/counterparty" className="button-secondary">
+            Проверить контрагента
+          </Link>
         </div>
       </div>
 
