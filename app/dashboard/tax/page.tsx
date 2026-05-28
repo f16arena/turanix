@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   MRP_2026,
@@ -61,6 +62,11 @@ export default function TaxPage() {
           <span>МЗП 2026: {fmt(MZP_2026)}</span>
           <span className="text-[color:var(--ink-mute)]">·</span>
           <span>Вычет ИПН: {IPN_DEDUCTION_MRP} МРП = {fmt(IPN_DEDUCTION_MRP * MRP_2026)}</span>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link href="/dashboard/tax/kgd" className="button-primary">
+            Мои данные из КГД
+          </Link>
         </div>
       </div>
 

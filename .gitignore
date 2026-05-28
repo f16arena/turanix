@@ -39,6 +39,7 @@ yarn-error.log*
 # local agent/runtime files
 .claude/
 .dev.log
+.dev-*.log
 AGENTS.md
 CLAUDE.md
 
