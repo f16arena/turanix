@@ -112,7 +112,7 @@ async function kgdRequest<T = unknown>(
         ok: false,
         status: response.status,
         code: "kgd_error",
-        message: `КГД вернул HTTP ${response.status}.`,
+        message: "КГД не принял запрос.",
         details: body.slice(0, 1200),
       };
     }
@@ -165,7 +165,7 @@ export function searchKgdTaxpayer(
 export function searchKgdVatPayer(taxpayerCode: string) {
   const service = KGD_SERVICE_BY_ID.vatPayer;
   return kgdRequest(service.method, service.path, {
-    body: { taxpayerCode },
+    query: { taxpayerCode },
   });
 }
 

@@ -433,8 +433,24 @@ function summaryFor(runs: KgdServiceRun[], serviceId: string) {
 
 function summaryForRun(run: KgdServiceRun) {
   if (run.status === "skipped") return run.reason ?? "Для этой проверки нужен отдельный доступ.";
-  if (run.status === "error") return run.error ?? "КГД не вернул успешный ответ.";
+  if (run.status === "error") return humanRunError(run);
   return detailedSummary(run);
+}
+
+function humanRunError(run: KgdServiceRun) {
+  if (run.httpStatus === 401 || run.httpStatus === 403) {
+    return "КГД не принял токен доступа. Нужно проверить токен в настройках сервера.";
+  }
+  if (run.httpStatus === 405) {
+    return "КГД не принял формат запроса для этой проверки. Метод НДС переключен на безопасный запрос без тела.";
+  }
+  if (run.httpStatus === 404) {
+    return "Сервис КГД сейчас не найден по опубликованной инструкции.";
+  }
+  if (run.httpStatus && run.httpStatus >= 500) {
+    return "Сервис КГД временно недоступен. Проверку лучше повторить позже.";
+  }
+  return "КГД не вернул успешный ответ. Технические детали скрыты из интерфейса.";
 }
 
 function shortSummary(run: KgdServiceRun) {

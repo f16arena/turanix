@@ -67,7 +67,7 @@ export const KGD_SERVICES: KgdServiceDefinition[] = [
   {
     id: "vatPayer",
     title: "Поиск данных о плательщике НДС",
-    method: "POST",
+    method: "GET",
     path: "/services/isnaportalsync/public/search-payer-data",
     counterpartyUse: "risk",
     note: "Проверяет постановку/снятие с учета по НДС.",

@@ -1,10 +1,12 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
+  BadgeCheck,
   Building2,
-  CheckCircle2,
-  Database,
+  Landmark,
   RefreshCw,
+  ShieldCheck,
 } from "lucide-react";
 import { TURANIX_LEGAL_ENTITY } from "../../../_lib/legal-entity";
 import { getTuranixTaxpayerData } from "../../../_lib/kgd/client";
@@ -12,28 +14,32 @@ import type { KgdPersonName, KgdTaxpayerResponse } from "../../../_lib/kgd/types
 
 export const dynamic = "force-dynamic";
 
+type OwnDataResult = Awaited<ReturnType<typeof getTuranixTaxpayerData>>;
+type OwnDataError = Extract<OwnDataResult, { ok: false }>;
+
 export default async function KgdOwnDataPage() {
   const result = await getTuranixTaxpayerData();
   const rows = result.ok ? result.data.taxpayerPortalSearchResponses ?? [] : [];
   const primary = rows[0];
+  const active = rows.some((row) => !row.endDate);
 
   return (
     <div className="mx-auto max-w-[1120px]">
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="eyebrow mb-2">КГД / мои сведения</div>
-          <h1 className="text-[34px] font-semibold leading-tight">
-            Данные Turanix из налогового портала
+          <div className="eyebrow mb-2">КГД / свои сведения</div>
+          <h1 className="max-w-[820px] text-[34px] font-semibold leading-tight lg:text-[46px]">
+            Сведения Turanix из налогового портала.
           </h1>
-          <p className="mt-2 max-w-[720px] text-[15px] leading-[1.6] text-[color:var(--ink-soft)]">
-            Сервер запрашивает сведения по БИН {TURANIX_LEGAL_ENTITY.bin} через
-            токен КГД. Токен хранится только в переменных окружения и не уходит
-            в браузер.
+          <p className="mt-3 max-w-[760px] text-[15px] leading-[1.6] text-[color:var(--ink-soft)]">
+            Сверка регистрационных данных ТОО по БИН {TURANIX_LEGAL_ENTITY.bin}:
+            статус записи, дата регистрации, налоговый орган и дополнительные
+            сведения из КГД.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link href="/dashboard/tax" className="button-secondary">
-            ← Калькулятор
+            ← Налоги
           </Link>
           <Link href="/dashboard/tax/kgd" className="button-primary">
             <RefreshCw className="h-4 w-4" />
@@ -45,18 +51,76 @@ export default async function KgdOwnDataPage() {
       {!result.ok ? (
         <ErrorState result={result} />
       ) : (
-        <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
+        <div className="grid gap-5">
+          <section className="surface-dark overflow-hidden p-6 text-white">
+            <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+              <div>
+                <div className="font-mono text-[10px] uppercase text-white/50">
+                  Основная запись
+                </div>
+                <h2 className="mt-3 text-[30px] font-semibold leading-tight lg:text-[42px]">
+                  {primary ? displayName(primary) : TURANIX_LEGAL_ENTITY.legalName}
+                </h2>
+                <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                  <DarkStat label="БИН" value={primary?.code ?? TURANIX_LEGAL_ENTITY.bin} />
+                  <DarkStat label="Тип" value={labelTaxpayerType(primary?.taxpayerType)} />
+                  <DarkStat label="Записей" value={String(rows.length)} />
+                </div>
+              </div>
+              <div className="rounded-md border border-white/12 bg-white/6 p-5">
+                <div className="font-mono text-[10px] uppercase text-white/50">
+                  Статус
+                </div>
+                <div
+                  className={`mt-4 inline-flex rounded-full px-3 py-1.5 text-[12px] font-semibold ${
+                    active
+                      ? "bg-[color:var(--signal)] text-[#111]"
+                      : "bg-white/12 text-white"
+                  }`}
+                >
+                  {active ? "Активная запись найдена" : "Нужна ручная сверка"}
+                </div>
+                <p className="mt-4 text-[14px] leading-[1.6] text-white/70">
+                  {active
+                    ? "КГД вернул действующую запись без даты окончания."
+                    : "В ответе нет активной записи или сведения требуют повторной проверки."}
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="grid gap-3 lg:grid-cols-3">
+            <HighlightCard
+              icon={<Building2 className="h-5 w-5" />}
+              title="Регистрация"
+              value={primary?.registrationType?.ru ?? "Нет сведений"}
+              description={primary?.beginDate ? `Дата начала: ${formatKgdDate(primary.beginDate)}` : "Дата начала не указана."}
+            />
+            <HighlightCard
+              icon={<Landmark className="h-5 w-5" />}
+              title="Налоговый орган"
+              value={primary?.taxOrg ?? "Нет сведений"}
+              description="Орган КГД, который вернул основную запись."
+            />
+            <HighlightCard
+              icon={<BadgeCheck className="h-5 w-5" />}
+              title="Результат"
+              value={primary?.messageResult ?? "Ответ получен"}
+              description={primary?.errorMessage ? "Есть сообщение КГД, проверьте ниже." : "Критичного сообщения КГД не показал."}
+            />
+          </section>
+
           <section className="surface overflow-hidden">
             <header className="flex items-center gap-3 border-b border-[color:var(--rule)] p-5">
               <span className="flex h-10 w-10 items-center justify-center rounded-md bg-[color:var(--accent-soft)] text-[color:var(--accent)]">
-                <Building2 className="h-5 w-5" />
+                <ShieldCheck className="h-5 w-5" />
               </span>
               <div>
                 <div className="font-mono text-[10px] uppercase text-[color:var(--ink-mute)]">
-                  Основная запись
+                  Карточка ТОО
                 </div>
                 <h2 className="text-[21px] font-semibold">
-                  {primary ? displayName(primary) : TURANIX_LEGAL_ENTITY.legalName}
+                  Обработанные сведения без технического ответа
                 </h2>
               </div>
             </header>
@@ -64,125 +128,134 @@ export default async function KgdOwnDataPage() {
             {primary ? (
               <div className="grid gap-0 sm:grid-cols-2">
                 <Detail label="БИН" value={primary.code ?? TURANIX_LEGAL_ENTITY.bin} mono />
-                <Detail label="Тип" value={primary.taxpayerType ?? "UL"} mono />
-                <Detail label="Результат" value={primary.messageResult ?? "—"} />
-                <Detail label="Регистрация" value={primary.registrationType?.ru ?? "—"} />
-                <Detail label="Дата начала" value={primary.beginDate ?? "—"} mono />
-                <Detail label="Дата окончания" value={primary.endDate ?? "Не указана"} mono />
+                <Detail label="Тип налогоплательщика" value={labelTaxpayerType(primary.taxpayerType)} />
+                <Detail label="Дата начала" value={formatKgdDate(primary.beginDate)} mono />
+                <Detail label="Дата окончания" value={formatKgdDate(primary.endDate) || "Не указана"} mono />
                 <Detail
                   label="Причина окончания"
                   value={primary.endReason?.ru ?? primary.endReasonCode ?? "Не указана"}
                 />
-                <Detail label="Налоговый орган" value={primary.taxOrg ?? "—"} />
-                <Detail label="Дополнительно" value={primary.additionalInfo ?? "—"} full />
-                <Detail label="Ошибка КГД" value={primary.errorMessage ?? "Нет"} full />
+                <Detail label="Налоговый орган" value={primary.taxOrg ?? "Не указан"} />
+                <Detail label="Дополнительно" value={primary.additionalInfo ?? "Нет дополнительных сведений"} full />
+                <Detail label="Сообщение КГД" value={primary.errorMessage ?? "Нет сообщений"} full />
               </div>
             ) : (
               <div className="p-5 text-[14px] text-[color:var(--ink-soft)]">
-                КГД вернул успешный ответ, но массив сведений пустой.
+                КГД ответил, но не передал карточку налогоплательщика.
               </div>
             )}
           </section>
 
-          <aside className="grid content-start gap-4">
-            <StatusCard rows={rows} />
-            <section className="surface p-5">
-              <div className="font-mono text-[10px] uppercase text-[color:var(--ink-mute)]">
-                Запрашиваем как
-              </div>
-              <div className="mt-4 grid gap-3 text-[14px]">
-                <MiniRow label="taxpayerCode" value={TURANIX_LEGAL_ENTITY.bin} />
-                <MiniRow label="taxpayerType" value="UL" />
-                <MiniRow label="name" value="TURANIX" />
-                <MiniRow label="print" value="false" />
-              </div>
-            </section>
-          </aside>
-
-          <section className="surface overflow-hidden lg:col-span-2">
-            <header className="flex items-center gap-3 border-b border-[color:var(--rule)] p-5">
-              <Database className="h-5 w-5 text-[color:var(--ink-mute)]" />
-              <div>
+          {rows.length > 1 && (
+            <section className="surface overflow-hidden">
+              <header className="border-b border-[color:var(--rule)] p-5">
                 <div className="font-mono text-[10px] uppercase text-[color:var(--ink-mute)]">
-                  Raw JSON
+                  Дополнительные записи
                 </div>
                 <h2 className="text-[18px] font-semibold">
-                  Полный ответ КГД
+                  КГД вернул несколько совпадений
                 </h2>
+              </header>
+              <div className="grid gap-0">
+                {rows.slice(1).map((row, index) => (
+                  <div
+                    key={`${row.code ?? "row"}-${index}`}
+                    className="grid gap-3 border-b border-[color:var(--rule)] p-4 sm:grid-cols-[42px_1fr_180px]"
+                  >
+                    <div className="font-mono text-[11px] text-[color:var(--ink-mute)]">
+                      {String(index + 2).padStart(2, "0")}
+                    </div>
+                    <div>
+                      <div className="font-semibold">{displayName(row)}</div>
+                      <p className="mt-1 text-[13px] text-[color:var(--ink-soft)]">
+                        {row.registrationType?.ru ?? "Тип регистрации не указан"}
+                      </p>
+                    </div>
+                    <div className="font-mono text-[12px] text-[color:var(--ink-mute)]">
+                      {formatKgdDate(row.beginDate) || "Дата не указана"}
+                    </div>
+                  </div>
+                ))}
               </div>
-            </header>
-            <pre className="max-h-[460px] overflow-auto bg-[#101316] p-5 text-[12px] leading-[1.6] text-white/86">
-              {JSON.stringify(result.data, null, 2)}
-            </pre>
-          </section>
+            </section>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-function ErrorState({
-  result,
-}: {
-  result: Exclude<Awaited<ReturnType<typeof getTuranixTaxpayerData>>, { ok: true }>;
-}) {
+function ErrorState({ result }: { result: OwnDataError }) {
   return (
     <section className="surface border-amber-200 bg-amber-50/70 p-5">
       <div className="flex gap-3">
         <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
         <div>
           <h2 className="text-[20px] font-semibold text-amber-950">
-            Данные пока не загружаются
+            Сведения пока не загрузились
           </h2>
           <p className="mt-2 max-w-[760px] text-[14px] leading-[1.6] text-amber-900">
-            {result.message}
+            {humanError(result)}
           </p>
-          {result.missing && result.missing.length > 0 && (
-            <div className="mt-4 rounded-md border border-amber-200 bg-white/70 p-4">
-              <div className="font-mono text-[10px] uppercase text-amber-800">
-                Нужно добавить в .env.local и Vercel
-              </div>
-              <pre className="mt-3 overflow-auto text-[13px] text-amber-950">
-                {result.missing.map((name) => `${name}=`).join("\n")}
-              </pre>
-            </div>
-          )}
-          {result.details && (
-            <pre className="mt-4 max-h-[220px] overflow-auto rounded-md bg-white/70 p-4 text-[12px] text-amber-950">
-              {result.details}
-            </pre>
-          )}
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <HintCard title="Токен" text="Проверьте доступ КГД на сервере." />
+            <HintCard title="Портал" text="Проверьте адрес налогового портала." />
+            <HintCard title="Повтор" text="После правки обновите страницу." />
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-function StatusCard({ rows }: { rows: KgdTaxpayerResponse[] }) {
-  const hasActive = rows.some((row) => !row.endDate);
-
+function HighlightCard({
+  icon,
+  title,
+  value,
+  description,
+}: {
+  icon: ReactNode;
+  title: string;
+  value: string;
+  description: string;
+}) {
   return (
-    <section className="surface p-5">
-      <div className="flex items-start gap-3">
-        <CheckCircle2
-          className={`mt-0.5 h-5 w-5 ${
-            hasActive ? "text-[color:var(--accent)]" : "text-[color:var(--ink-mute)]"
-          }`}
-        />
-        <div>
-          <div className="font-mono text-[10px] uppercase text-[color:var(--ink-mute)]">
-            Статус
-          </div>
-          <div className="mt-2 text-[22px] font-semibold">
-            {hasActive ? "Есть активная запись" : "Нужно проверить вручную"}
-          </div>
-          <p className="mt-2 text-[13px] leading-[1.55] text-[color:var(--ink-soft)]">
-            Найдено записей: {rows.length}. Если КГД вернул несколько записей,
-            смотри полный JSON ниже.
-          </p>
+    <div className="surface p-5">
+      <div className="flex items-center gap-3 text-[color:var(--accent)]">
+        {icon}
+        <div className="font-mono text-[10px] uppercase text-[color:var(--ink-mute)]">
+          {title}
         </div>
       </div>
-    </section>
+      <div className="mt-4 text-[20px] font-semibold leading-tight">{value}</div>
+      <p className="mt-2 text-[13px] leading-[1.6] text-[color:var(--ink-soft)]">
+        {description}
+      </p>
+    </div>
+  );
+}
+
+function HintCard({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="rounded-md border border-amber-200 bg-white/70 p-4">
+      <div className="font-mono text-[10px] uppercase text-amber-800">
+        {title}
+      </div>
+      <div className="mt-2 text-[13px] leading-[1.5] text-amber-950">
+        {text}
+      </div>
+    </div>
+  );
+}
+
+function DarkStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-md border border-white/12 bg-white/6 p-4">
+      <div className="font-mono text-[10px] uppercase text-white/46">
+        {label}
+      </div>
+      <div className="mt-2 text-[14px] font-semibold text-white">{value}</div>
+    </div>
   );
 }
 
@@ -217,17 +290,23 @@ function Detail({
   );
 }
 
-function MiniRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between gap-3 border-b border-[color:var(--rule)] pb-2 last:border-0 last:pb-0">
-      <span className="font-mono text-[11px] text-[color:var(--ink-mute)]">
-        {label}
-      </span>
-      <span className="font-mono text-[12px] text-[color:var(--ink)]">
-        {value}
-      </span>
-    </div>
-  );
+function humanError(result: OwnDataError) {
+  if (result.code === "missing_config") {
+    return "На сервере не заполнены настройки подключения к КГД.";
+  }
+  if (result.code === "invalid_config") {
+    return "Адрес портала КГД указан некорректно.";
+  }
+  if (result.status === 401 || result.status === 403) {
+    return "КГД не принял токен доступа. Нужно обновить или проверить токен.";
+  }
+  if (result.status === 405) {
+    return "КГД не принял формат запроса. Проверьте актуальную инструкцию сервиса.";
+  }
+  if (result.status && result.status >= 500) {
+    return "Портал КГД временно недоступен. Повторите запрос позже.";
+  }
+  return result.message || "Не удалось получить сведения из КГД.";
 }
 
 function displayName(row: KgdTaxpayerResponse) {
@@ -241,4 +320,23 @@ function displayName(row: KgdTaxpayerResponse) {
 
 function formatPersonName(name: KgdPersonName) {
   return [name.lastName, name.firstName, name.middleName].filter(Boolean).join(" ");
+}
+
+function labelTaxpayerType(type?: string | null) {
+  if (type === "UL") return "Юридическое лицо";
+  if (type === "UL_NR") return "ЮЛ-нерезидент";
+  if (type === "IP") return "Индивидуальный предприниматель";
+  if (type === "LZCHP") return "Частная практика";
+  return type || "Не указан";
+}
+
+function formatKgdDate(value?: string | null) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("ru-KZ", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
 }
