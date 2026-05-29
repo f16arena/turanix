@@ -478,9 +478,10 @@ function collectDisplayFields(
 }
 
 function extractRecords(data: unknown): unknown[] {
-  if (Array.isArray(data)) return data;
+  if (Array.isArray(data)) return filterMeaningfulRecords(data);
   const record = asRecord(data);
   if (!record) return [];
+  if (isNoResultRecord(record)) return [];
 
   for (const key of [
     "taxpayerPortalSearchResponses",
@@ -499,14 +500,15 @@ function extractRecords(data: unknown): unknown[] {
     "taxOrgInfos",
   ]) {
     const value = record[key];
-    if (Array.isArray(value)) return value;
+    if (Array.isArray(value)) return filterMeaningfulRecords(value);
   }
 
   for (const key of ["response", "taxpayers", "data", "result", "body"]) {
     const value = record[key];
-    if (Array.isArray(value)) return value;
+    if (Array.isArray(value)) return filterMeaningfulRecords(value);
     const nested = asRecord(value);
     if (!nested) continue;
+    if (isNoResultRecord(nested)) return [];
     for (const nestedKey of [
       "content",
       "items",
@@ -522,15 +524,52 @@ function extractRecords(data: unknown): unknown[] {
       "events",
     ]) {
       const nestedValue = nested[nestedKey];
-      if (Array.isArray(nestedValue)) return nestedValue;
+      if (Array.isArray(nestedValue)) return filterMeaningfulRecords(nestedValue);
     }
   }
 
   return hasMeaningfulDisplayFields(record) ? [record] : [];
 }
 
+function filterMeaningfulRecords(records: unknown[]) {
+  return records.filter((record) => {
+    const object = asRecord(record);
+    return !object || !isNoResultRecord(object);
+  });
+}
+
 function hasMeaningfulDisplayFields(record: Record<string, unknown>) {
+  if (isNoResultRecord(record)) return false;
   return collectDisplayFields(record, { topLevelOnly: true }).length > 0;
+}
+
+function isNoResultRecord(record: Record<string, unknown>) {
+  const messageCode = stringValue(record.messageCode || record.code).toLowerCase();
+  if (
+    messageCode.includes("not-found") ||
+    messageCode.includes("not_found") ||
+    messageCode.includes("notfound")
+  ) {
+    return true;
+  }
+
+  const message = [
+    record.messageRu,
+    record.message,
+    record.messageEn,
+    record.messageKk,
+    record.errorMessage,
+  ]
+    .map(stringValue)
+    .join(" ")
+    .toLowerCase();
+
+  return (
+    message.includes("не найден") ||
+    message.includes("не найд") ||
+    message.includes("not found") ||
+    message.includes("табылмады")
+  );
 }
 
 const FIELD_LABELS: Record<string, string> = {
@@ -891,6 +930,7 @@ function humanRunError(run: KgdServiceRun) {
 function shortSummary(run: KgdServiceRun) {
   if (run.status === "skipped") return "Нужен доступ";
   if (run.status === "error") return "Не получено";
+  if (isNoResultResponse(run.data)) return "Записей риска не найдено";
   const count = countRecords(run.data);
   if (count > 0) return `Есть сведения: ${count}`;
   return "Ответ получен";
@@ -898,6 +938,9 @@ function shortSummary(run: KgdServiceRun) {
 
 function detailedSummary(run: KgdServiceRun) {
   const count = countRecords(run.data);
+  if (isNoResultResponse(run.data)) {
+    return "КГД ответил: должник не найден. Записей риска нет.";
+  }
   if (run.serviceId === "taxpayerSearch") {
     const primary = getPrimaryTaxpayer([run]);
     return primary.name
@@ -919,6 +962,7 @@ function detailedSummary(run: KgdServiceRun) {
 
 function hasRiskSignal(run: KgdServiceRun) {
   if (run.status !== "success" || !RISK_SERVICE_IDS.has(run.serviceId)) return false;
+  if (isNoResultResponse(run.data)) return false;
   return countRecords(run.data) > 0 || hasPositiveArrear(run.data);
 }
 
@@ -936,6 +980,27 @@ function hasPositiveArrear(data: unknown) {
 
 function countRecords(data: unknown): number {
   return extractRecords(data).length;
+}
+
+function isNoResultResponse(data: unknown) {
+  const record = asRecord(data);
+  if (record && isNoResultRecord(record)) return true;
+  return extractRecords(data).length === 0 && findNoResultRecord(data);
+}
+
+function findNoResultRecord(data: unknown): boolean {
+  if (Array.isArray(data)) {
+    return data.some((item) => {
+      const record = asRecord(item);
+      return record ? isNoResultRecord(record) || findNoResultRecord(record) : false;
+    });
+  }
+
+  const record = asRecord(data);
+  if (!record) return false;
+  if (isNoResultRecord(record)) return true;
+
+  return Object.values(record).some((value) => findNoResultRecord(value));
 }
 
 function humanServiceNote(kind: string) {
