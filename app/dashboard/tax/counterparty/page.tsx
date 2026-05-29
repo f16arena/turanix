@@ -286,7 +286,383 @@ function RunCard({ run, index }: { run: KgdServiceRun; index: number }) {
           {state.label}
         </div>
       </div>
+      {run.status === "success" && <RunDetails run={run} />}
     </section>
+  );
+}
+
+type DisplayField = {
+  label: string;
+  value: string;
+  mono?: boolean;
+};
+
+type DisplayRecord = {
+  title: string;
+  fields: DisplayField[];
+};
+
+function RunDetails({ run }: { run: KgdServiceRun }) {
+  const records = buildDisplayRecords(run);
+  const facts = buildTopFacts(run);
+  const hiddenCount = Math.max(0, extractRecords(run.data).length - records.length);
+
+  if (records.length === 0 && facts.length === 0) return null;
+
+  return (
+    <div className="mt-4 border-t border-[color:var(--rule)] pt-4">
+      <div className="mb-3 font-mono text-[10px] uppercase text-[color:var(--ink-mute)]">
+        Детали ответа КГД
+      </div>
+      {facts.length > 0 && (
+        <div className="mb-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          {facts.map((field) => (
+            <FieldTile key={`${field.label}-${field.value}`} field={field} compact />
+          ))}
+        </div>
+      )}
+      {records.length > 0 && (
+        <div className="grid gap-3">
+          {records.map((record, recordIndex) => (
+            <div
+              key={`${record.title}-${recordIndex}`}
+              className="rounded-md border border-[color:var(--rule)] bg-[#fbfbf8] p-4"
+            >
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <h3 className="text-[15px] font-semibold">{record.title}</h3>
+                <span className="font-mono text-[10px] uppercase text-[color:var(--ink-mute)]">
+                  запись {String(recordIndex + 1).padStart(2, "0")}
+                </span>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {record.fields.map((field) => (
+                  <FieldTile key={`${record.title}-${field.label}-${field.value}`} field={field} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {hiddenCount > 0 && (
+        <div className="mt-3 rounded-md border border-[color:var(--rule)] bg-white px-3 py-2 text-[12px] text-[color:var(--ink-soft)]">
+          Показаны первые {records.length} записей. Остальные записи: {hiddenCount}.
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FieldTile({
+  field,
+  compact,
+}: {
+  field: DisplayField;
+  compact?: boolean;
+}) {
+  return (
+    <div className="rounded-md border border-[color:var(--rule)] bg-white p-3">
+      <div className="font-mono text-[9px] uppercase text-[color:var(--ink-mute)]">
+        {field.label}
+      </div>
+      <div
+        className={`mt-1 break-words text-[13px] leading-[1.45] text-[color:var(--ink)] ${
+          field.mono ? "font-mono" : ""
+        } ${compact ? "font-semibold" : ""}`}
+      >
+        {field.value}
+      </div>
+    </div>
+  );
+}
+
+function buildDisplayRecords(run: KgdServiceRun): DisplayRecord[] {
+  const records = extractRecords(run.data).slice(0, 10);
+
+  return records
+    .map((record, index) => {
+      const object = asRecord(record);
+      const fields = object
+        ? collectDisplayFields(object).slice(0, 18)
+        : [{ label: "Значение", value: formatDisplayValue(record, "value") ?? "—" }];
+
+      return {
+        title: recordTitle(run, object, index),
+        fields,
+      };
+    })
+    .filter((record) => record.fields.length > 0);
+}
+
+function buildTopFacts(run: KgdServiceRun): DisplayField[] {
+  const count = countRecords(run.data);
+  const facts: DisplayField[] = [
+    { label: "Найдено записей", value: String(count), mono: true },
+  ];
+  const record = asRecord(run.data);
+  if (!record) return facts;
+
+  return facts.concat(
+    collectDisplayFields(record, { topLevelOnly: true })
+      .filter((field) => field.label !== "Найдено записей")
+      .slice(0, 7),
+  );
+}
+
+function recordTitle(
+  run: KgdServiceRun,
+  record: Record<string, unknown> | null,
+  index: number,
+) {
+  if (!record) return `${run.title} #${index + 1}`;
+  return (
+    stringValue(record.name) ||
+    stringValue(record.taxPayerOrgName) ||
+    stringValue(record.taxpayerName) ||
+    stringValue(record.organizationName) ||
+    fullName(record.fullName) ||
+    stringValue(record.title) ||
+    stringValue(record.type) ||
+    `${run.title} #${index + 1}`
+  );
+}
+
+function collectDisplayFields(
+  record: Record<string, unknown>,
+  options: { prefix?: string; depth?: number; topLevelOnly?: boolean } = {},
+): DisplayField[] {
+  const prefix = options.prefix ?? "";
+  const depth = options.depth ?? 0;
+  const fields: DisplayField[] = [];
+
+  for (const [key, value] of Object.entries(record)) {
+    if (shouldSkipDisplayKey(key) || isEmptyValue(value)) continue;
+    if (options.topLevelOnly && isRecordLike(value)) continue;
+
+    const label = fieldLabel(key, prefix);
+    const displayValue = formatDisplayValue(value, key);
+
+    if (displayValue) {
+      fields.push({
+        label,
+        value: displayValue,
+        mono: shouldUseMono(key, displayValue),
+      });
+      continue;
+    }
+
+    if (Array.isArray(value)) {
+      fields.push({
+        label,
+        value: `${value.length} записей`,
+        mono: true,
+      });
+      continue;
+    }
+
+    const nested = asRecord(value);
+    if (nested && depth < 2) {
+      fields.push(
+        ...collectDisplayFields(nested, {
+          prefix: label,
+          depth: depth + 1,
+        }),
+      );
+    }
+  }
+
+  return fields;
+}
+
+function extractRecords(data: unknown): unknown[] {
+  if (Array.isArray(data)) return data;
+  const record = asRecord(data);
+  if (!record) return [];
+
+  for (const key of [
+    "taxpayerPortalSearchResponses",
+    "content",
+    "items",
+    "records",
+    "rows",
+    "list",
+    "resultList",
+    "taxpayers",
+    "announcements",
+    "debtors",
+    "events",
+    "payments",
+    "accruals",
+    "taxOrgInfos",
+  ]) {
+    const value = record[key];
+    if (Array.isArray(value)) return value;
+  }
+
+  for (const key of ["response", "taxpayers", "data", "result", "body"]) {
+    const value = record[key];
+    if (Array.isArray(value)) return value;
+    const nested = asRecord(value);
+    if (!nested) continue;
+    for (const nestedKey of [
+      "content",
+      "items",
+      "records",
+      "rows",
+      "data",
+      "list",
+      "result",
+      "resultList",
+      "taxpayers",
+      "announcements",
+      "debtors",
+      "events",
+    ]) {
+      const nestedValue = nested[nestedKey];
+      if (Array.isArray(nestedValue)) return nestedValue;
+    }
+  }
+
+  return hasMeaningfulDisplayFields(record) ? [record] : [];
+}
+
+function hasMeaningfulDisplayFields(record: Record<string, unknown>) {
+  return collectDisplayFields(record, { topLevelOnly: true }).length > 0;
+}
+
+const FIELD_LABELS: Record<string, string> = {
+  additionalInfo: "Дополнительно",
+  announcementDate: "Дата объявления",
+  beginDate: "Дата начала",
+  bin: "БИН",
+  code: "Код / БИН",
+  count: "Количество",
+  createdAt: "Создано",
+  date: "Дата",
+  debtorName: "Должник",
+  description: "Описание",
+  directorIin: "ИИН руководителя",
+  endDate: "Дата окончания",
+  endReason: "Причина окончания",
+  endReasonCode: "Код причины окончания",
+  errorMessage: "Сообщение КГД",
+  fio: "ФИО",
+  firstName: "Имя",
+  fullName: "ФИО / Наименование",
+  iin: "ИИН",
+  iinBin: "БИН / ИИН",
+  iin_bin: "БИН / ИИН",
+  lastName: "Фамилия",
+  messageResult: "Результат",
+  middleName: "Отчество",
+  name: "Наименование",
+  number: "Номер",
+  organizationName: "Организация",
+  procedureType: "Тип процедуры",
+  publishDate: "Дата публикации",
+  publishedAt: "Опубликовано",
+  registrationType: "Тип регистрации",
+  rnn: "РНН",
+  status: "Статус",
+  sum: "Сумма",
+  taxOrg: "Налоговый орган",
+  taxpayerCode: "БИН / ИИН",
+  taxPayerCode: "БИН / ИИН",
+  taxPayerOrgName: "Наименование",
+  taxpayerName: "Наименование",
+  taxpayerType: "Тип лица",
+  title: "Название",
+  total: "Итого",
+  totalArrear: "Всего задолженность",
+  type: "Тип",
+};
+
+const SKIPPED_DISPLAY_KEYS = new Set([
+  "header",
+  "pageable",
+  "sort",
+  "first",
+  "last",
+  "empty",
+  "size",
+  "numberOfElements",
+  "responseMessageUid",
+  "messageId",
+]);
+
+function fieldLabel(key: string, prefix = "") {
+  const own = FIELD_LABELS[key] ?? humanizeKey(key);
+  return prefix ? `${prefix}: ${own}` : own;
+}
+
+function humanizeKey(key: string) {
+  return key
+    .replace(/_/g, " ")
+    .replace(/([a-zа-я])([A-ZА-Я])/g, "$1 $2")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function shouldSkipDisplayKey(key: string) {
+  return SKIPPED_DISPLAY_KEYS.has(key);
+}
+
+function isEmptyValue(value: unknown) {
+  return (
+    value === null ||
+    value === undefined ||
+    value === "" ||
+    (Array.isArray(value) && value.length === 0)
+  );
+}
+
+function isRecordLike(value: unknown) {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+function formatDisplayValue(value: unknown, key: string): string | null {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    return formatMaybeDate(trimmed, key);
+  }
+  if (typeof value === "number") return new Intl.NumberFormat("ru-KZ").format(value);
+  if (typeof value === "boolean") return value ? "Да" : "Нет";
+
+  const locale = localeRu(value);
+  if (locale) return locale;
+
+  const person = fullName(value);
+  if (person) return person;
+
+  const record = asRecord(value);
+  if (record) {
+    return (
+      stringValue(record.name) ||
+      stringValue(record.title) ||
+      stringValue(record.value) ||
+      stringValue(record.code) ||
+      null
+    );
+  }
+
+  return null;
+}
+
+function formatMaybeDate(value: string, key: string) {
+  if (!/(date|time|at)$/i.test(key) && !/^\d{4}-\d{2}-\d{2}/.test(value)) {
+    return value;
+  }
+  const dateOnly = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (dateOnly) return `${dateOnly[3]}.${dateOnly[2]}.${dateOnly[1]}`;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return formatDateTime(value);
+}
+
+function shouldUseMono(key: string, value: string) {
+  return (
+    /bin|iin|code|number|id|uid|rnn/i.test(key) ||
+    /^\d{6,}$/.test(value.replace(/\s/g, ""))
   );
 }
 
@@ -500,27 +876,7 @@ function hasPositiveArrear(data: unknown) {
 }
 
 function countRecords(data: unknown): number {
-  if (Array.isArray(data)) return data.length;
-  const record = asRecord(data);
-  if (!record) return 0;
-
-  const directArrays = [
-    record.taxpayerPortalSearchResponses,
-    record.response,
-    record.items,
-    record.taxOrgInfos,
-  ];
-  for (const value of directArrays) {
-    if (Array.isArray(value)) return value.length;
-  }
-
-  const response = asRecord(record.response);
-  if (Array.isArray(response?.content)) return response.content.length;
-
-  const taxpayers = asRecord(record.taxpayers);
-  if (Array.isArray(taxpayers?.content)) return taxpayers.content.length;
-
-  return Object.keys(record).length > 0 ? 1 : 0;
+  return extractRecords(data).length;
 }
 
 function humanServiceNote(kind: string) {
