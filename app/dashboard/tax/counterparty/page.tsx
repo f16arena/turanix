@@ -416,9 +416,11 @@ function recordTitle(
   if (!record) return `${run.title} #${index + 1}`;
   return (
     stringValue(record.name) ||
+    stringValue(record.nameRu) ||
     stringValue(record.taxPayerOrgName) ||
     stringValue(record.taxpayerName) ||
     stringValue(record.organizationName) ||
+    stringValue(record.messageRu) ||
     fullName(record.fullName) ||
     stringValue(record.title) ||
     stringValue(record.type) ||
@@ -436,7 +438,9 @@ function collectDisplayFields(
 
   for (const [key, value] of Object.entries(record)) {
     if (shouldSkipDisplayKey(key) || isEmptyValue(value)) continue;
+    if (shouldSkipLocaleField(record, key)) continue;
     if (options.topLevelOnly && isRecordLike(value)) continue;
+    if (options.topLevelOnly && Array.isArray(value)) continue;
 
     const label = fieldLabel(key, prefix);
     const displayValue = formatDisplayValue(value, key);
@@ -538,6 +542,7 @@ const FIELD_LABELS: Record<string, string> = {
   count: "Количество",
   createdAt: "Создано",
   date: "Дата",
+  debtorIinBin: "БИН / ИИН должника",
   debtorName: "Должник",
   description: "Описание",
   directorIin: "ИИН руководителя",
@@ -552,9 +557,20 @@ const FIELD_LABELS: Record<string, string> = {
   iinBin: "БИН / ИИН",
   iin_bin: "БИН / ИИН",
   lastName: "Фамилия",
+  message: "Сообщение",
+  messageCode: "Код сообщения",
+  messageKk: "Сообщение",
+  messageEn: "Сообщение",
+  messageRu: "Сообщение",
   messageResult: "Результат",
   middleName: "Отчество",
   name: "Наименование",
+  nameEn: "Наименование",
+  nameKk: "Наименование",
+  nameRu: "Наименование",
+  ndsRegistrationDate: "Дата регистрации НДС",
+  ndsRegistrationNumber: "Номер регистрации НДС",
+  ndsRegistrationSeries: "Серия регистрации НДС",
   number: "Номер",
   organizationName: "Организация",
   procedureType: "Тип процедуры",
@@ -589,6 +605,21 @@ const SKIPPED_DISPLAY_KEYS = new Set([
   "messageId",
 ]);
 
+const VALUE_TRANSLATIONS: Record<string, string> = {
+  SUCCESS: "Успешно",
+  ERROR: "Ошибка",
+  ACTIVE: "Активно",
+  INACTIVE: "Неактивно",
+  UL: "Юридическое лицо",
+  UL_NR: "ЮЛ-нерезидент",
+  IP: "Индивидуальный предприниматель",
+  LZCHP: "Частная практика",
+  true: "Да",
+  false: "Нет",
+  "error.debtor-not-found": "Должник не найден",
+  "Debtor not found": "Должник не найден",
+};
+
 function fieldLabel(key: string, prefix = "") {
   const own = FIELD_LABELS[key] ?? humanizeKey(key);
   return prefix ? `${prefix}: ${own}` : own;
@@ -604,6 +635,24 @@ function humanizeKey(key: string) {
 
 function shouldSkipDisplayKey(key: string) {
   return SKIPPED_DISPLAY_KEYS.has(key);
+}
+
+function shouldSkipLocaleField(record: Record<string, unknown>, key: string) {
+  if (key === "messageCode" && hasRussianVariant(record, "message")) return true;
+  if (key === "messageEn" && hasRussianVariant(record, "message")) return true;
+  if (key === "messageKk" && hasRussianVariant(record, "message")) return true;
+  if (key === "messageQq" && hasRussianVariant(record, "message")) return true;
+  if (key === "nameEn" && hasRussianVariant(record, "name")) return true;
+  if (key === "nameKk" && hasRussianVariant(record, "name")) return true;
+  if (key === "nameQq" && hasRussianVariant(record, "name")) return true;
+  if (key.endsWith("En") && record[`${key.slice(0, -2)}Ru`]) return true;
+  if (key.endsWith("Kk") && record[`${key.slice(0, -2)}Ru`]) return true;
+  if (key.endsWith("Qq") && record[`${key.slice(0, -2)}Ru`]) return true;
+  return false;
+}
+
+function hasRussianVariant(record: Record<string, unknown>, base: string) {
+  return Boolean(record[`${base}Ru`] || record.ru);
 }
 
 function isEmptyValue(value: unknown) {
@@ -623,6 +672,8 @@ function formatDisplayValue(value: unknown, key: string): string | null {
   if (typeof value === "string") {
     const trimmed = value.trim();
     if (!trimmed) return null;
+    const translated = translateDisplayValue(trimmed, key);
+    if (translated) return translated;
     return formatMaybeDate(trimmed, key);
   }
   if (typeof value === "number") return new Intl.NumberFormat("ru-KZ").format(value);
@@ -645,6 +696,14 @@ function formatDisplayValue(value: unknown, key: string): string | null {
     );
   }
 
+  return null;
+}
+
+function translateDisplayValue(value: string, key: string) {
+  if (VALUE_TRANSLATIONS[value]) return VALUE_TRANSLATIONS[value];
+  if (key === "taxpayerType") return VALUE_TRANSLATIONS[value] ?? value;
+  if (key === "messageResult") return VALUE_TRANSLATIONS[value] ?? value;
+  if (key === "messageCode") return VALUE_TRANSLATIONS[value] ?? value;
   return null;
 }
 
